@@ -39,7 +39,7 @@ namespace server {
         boost::asio::async_write(
             socket, 
             boost::asio::buffer(data, length),
-            [this, self](boost::system::error_code ec, size_t)
+            [this, self](boost::system::error_code, size_t)
             {
                 // Do nothing
             }
