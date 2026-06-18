@@ -17,4 +17,4 @@ mkdir build
 cd build
 cmake ..
 make
-./scalable-tcp-server
+./server
