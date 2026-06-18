@@ -1,2 +1,6 @@
 other/
+build/
+bin/
+obj/
+
 
