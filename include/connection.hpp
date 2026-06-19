@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include <memory>
 #include <array>
+#include "logger.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -20,6 +21,7 @@ private:
     void read_data();
     void write_data(size_t length);
 
+    Logger logger;
     std::array<char, 512> data;
     tcp::socket socket;
 };

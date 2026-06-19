@@ -3,6 +3,7 @@
 
 #include <boost/asio.hpp>
 #include <string>
+#include "logger.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -23,6 +24,7 @@ void do_await_stop();
         
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
+Logger logger;
 
 };
 

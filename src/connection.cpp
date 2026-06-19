@@ -2,6 +2,7 @@
 #include <memory>
 #include <array>
 #include "connection.hpp"
+#include "logger.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -10,11 +11,12 @@ namespace server {
 
     connection::connection(tcp::socket sock) : socket(std::move(sock))
     {
-
+        logger.log("INFO", "connection", "new connection created");
     }
 
     void connection::start()
     {
+        logger.log("INFO", "connection", "connection started reading");
         read_data();
     }
 
@@ -27,7 +29,13 @@ namespace server {
             {
                 if(!ec)
                 {
+                    logger.log("DEBUG", "connection", "data received: " + std::to_string(bytes));
                     write_data(bytes);
+                }
+                else
+                {
+                    logger.log("ERROR", "connection", ec.message());
+                    return;
                 }
             }
         );
@@ -39,9 +47,12 @@ namespace server {
         boost::asio::async_write(
             socket, 
             boost::asio::buffer(data, length),
-            [this, self](boost::system::error_code, size_t)
+            [this, self](boost::system::error_code ec, size_t)
             {
-                // Do nothing
+                if(ec)
+                {
+                    logger.log("ERROR", "connection", "write failed: " + ec.message());
+                }
             }
         );
     }
