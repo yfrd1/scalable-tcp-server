@@ -21,7 +21,8 @@ private:
 
 void do_accept();
 void do_await_stop();
-        
+
+boost::asio::io_context& io_context;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
 Logger logger;

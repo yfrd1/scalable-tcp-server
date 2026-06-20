@@ -1,8 +1,8 @@
 #include <boost/asio.hpp>
 #include <string>
+#include "logger.hpp"
 #include "server.hpp"
 #include "connection.hpp"
-#include "logger.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -11,7 +11,7 @@ namespace server {
 
     server::server(boost::asio::io_context& io, 
         const std::string& host, const std::string& port) :
-        acceptor(io), signals(io)
+        io_context(io), acceptor(io), signals(io)
     {
         logger.log("INFO", "server", "initializing server");
 
@@ -41,6 +41,7 @@ namespace server {
     void server::do_accept()
     {
         acceptor.async_accept(
+            boost::asio::make_strand(io_context),
             [this](boost::system::error_code ec, tcp::socket sock)
             {
                 if(!acceptor.is_open())
