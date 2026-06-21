@@ -1,5 +1,7 @@
 #include <boost/asio.hpp>
 #include <string>
+#include <vector>
+#include <thread>
 #include "logger.hpp"
 #include "server.hpp"
 #include "connection.hpp"
@@ -10,8 +12,10 @@ namespace scalable {
 namespace server {
 
     server::server(boost::asio::io_context& io, 
-        const std::string& host, const std::string& port) :
-        io_context(io), acceptor(io), signals(io)
+        const std::string& host, const std::string& port,
+        size_t thread_pool_size) :
+        io_context(io), acceptor(io), signals(io),
+        max_thread_pool_size(thread_pool_size)
     {
         logger.log("INFO", "server", "initializing server");
 
@@ -36,6 +40,20 @@ namespace server {
         logger.log("INFO", "server", "listening on " + host + ":" + port);
 
         do_accept();
+    }
+
+    void server::run()
+    {
+        std::vector<std::thread> threads;
+        for(size_t i=0; i<max_thread_pool_size; ++i)
+        {
+            threads.emplace_back([&]{ io_context.run(); });
+        }
+
+        for(size_t i=0; i<max_thread_pool_size; ++i)
+        {
+            threads[i].join();
+        }
     }
 
     void server::do_accept()
