@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
 {
     if(argc!=4)
     {
-        std::cerr << "Usage: main <host> <port> <thread_pool_size>\n";
+        std::cerr << "Usage: ./server <host> <port> <thread_pool_size>\n";
         return 1;
     }
 
