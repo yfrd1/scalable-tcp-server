@@ -1,0 +1,40 @@
+{
+    "server":
+    {
+        "address": "0.0.0.0",
+        "port": 8080,
+        "backlog": 1024,
+        "reuse_address": true
+    },
+
+    "thread_pool":
+    {
+        "thread_count": 8
+    },
+
+    "socket":
+    {
+        "tcp_no_delay": true,
+        "keep_alive": true
+    },
+
+    "connections":
+    {
+        "max_connections": 10000,
+        "max_message_size_bytes": 1048576
+    },
+
+    "timeouts":
+    {
+        "read_timeout_seconds": 30,
+        "write_timeout_seconds": 10,
+        "idle_timeout_seconds": 300
+    },
+
+    "logging":
+    {
+        "level": "info",
+        "file": "logs/server.log",
+        "flush_interval_seconds": 3
+    }
+}
