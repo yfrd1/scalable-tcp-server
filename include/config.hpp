@@ -4,9 +4,13 @@
 #include <string>
 #include <boost/json.hpp>
 
-class Config {
+
+namespace scalable {
+namespace server {
+    
+class config {
 public:
-    explicit Config(const std::string& file_path);
+    explicit config(const std::string& file_path);
 
     // Load JSON file into memory
     bool load();
@@ -31,3 +35,6 @@ private:
 
     boost::json::value find_key(const std::string& key) const;
 };
+
+}
+}
