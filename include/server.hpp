@@ -29,7 +29,7 @@ boost::asio::io_context& io_context;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
 size_t max_thread_pool_size;
-Logger logger;
+logger logger_;
 
 };
 

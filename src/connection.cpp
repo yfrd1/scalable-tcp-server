@@ -11,12 +11,12 @@ namespace server {
 
     connection::connection(tcp::socket sock) : socket(std::move(sock))
     {
-        logger.log("INFO", "connection", "new connection created");
+        logger_.log("INFO", "connection", "new connection created");
     }
 
     void connection::start()
     {
-        logger.log("INFO", "connection", "connection started reading");
+        logger_.log("INFO", "connection", "connection started reading");
         read_data();
     }
 
@@ -29,12 +29,12 @@ namespace server {
             {
                 if(!ec)
                 {
-                    logger.log("DEBUG", "connection", "data received: " + std::to_string(bytes));
+                    logger_.log("DEBUG", "connection", "data received: " + std::to_string(bytes));
                     write_data(bytes);
                 }
                 else
                 {
-                    logger.log("ERROR", "connection", ec.message());
+                    logger_.log("ERROR", "connection", ec.message());
                     return;
                 }
             }
@@ -51,7 +51,7 @@ namespace server {
             {
                 if(ec)
                 {
-                    logger.log("ERROR", "connection", "write failed: " + ec.message());
+                    logger_.log("ERROR", "connection", "write failed: " + ec.message());
                 }
             }
         );

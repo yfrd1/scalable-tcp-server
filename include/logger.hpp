@@ -10,7 +10,7 @@
 namespace scalable {
 namespace server {
 
-class Logger
+class logger
 {
 public:
     void log(const std::string& level,

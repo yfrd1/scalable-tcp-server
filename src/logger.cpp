@@ -9,7 +9,7 @@
 namespace scalable {
 namespace server {
 
-    std::string Logger::getDate() {
+    std::string logger::getDate() {
         std::time_t t = std::time(nullptr);
         std::tm tm = *std::localtime(&t);
 
@@ -20,7 +20,7 @@ namespace server {
         return oss.str();
     }
 
-    std::string Logger::getDateTime() {
+    std::string logger::getDateTime() {
         std::time_t t = std::time(nullptr);
         std::tm tm = *std::localtime(&t);
 
@@ -35,7 +35,7 @@ namespace server {
         return oss.str();
     }
 
-    void Logger::openFileIfNeeded() {
+    void logger::openFileIfNeeded() {
 
         std::filesystem::create_directories("logs");
 
@@ -51,7 +51,7 @@ namespace server {
         }
     }
 
-    void Logger::log(const std::string& level,
+    void logger::log(const std::string& level,
              const std::string& module,
              const std::string& message) {
 

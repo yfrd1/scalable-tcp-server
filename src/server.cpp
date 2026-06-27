@@ -17,7 +17,7 @@ namespace server {
         io_context(io), acceptor(io), signals(io),
         max_thread_pool_size(thread_pool_size)
     {
-        logger.log("INFO", "server", "initializing server");
+        logger_.log("INFO", "server", "initializing server");
 
         signals.add(SIGINT);
         signals.add(SIGTERM);
@@ -30,14 +30,14 @@ namespace server {
         tcp::resolver resolve(io);
         tcp::endpoint endpoint = *resolve.resolve(host, port).begin();
 
-        logger.log("INFO", "server", "resolved endpoint " + host + ":" + port);
+        logger_.log("INFO", "server", "resolved endpoint " + host + ":" + port);
 
         acceptor.open(endpoint.protocol());
         acceptor.set_option(tcp::acceptor::reuse_address(true));
         acceptor.bind(endpoint);
         acceptor.listen();
 
-        logger.log("INFO", "server", "listening on " + host + ":" + port);
+        logger_.log("INFO", "server", "listening on " + host + ":" + port);
 
         do_accept();
     }
@@ -71,7 +71,7 @@ namespace server {
                 {
 
                     tcp::endpoint ep = sock.remote_endpoint();
-                    logger.log("INFO", "server", "client connected: " +
+                    logger_.log("INFO", "server", "client connected: " +
                         ep.address().to_string() + ":" + 
                             std::to_string(ep.port()));
 
@@ -79,7 +79,7 @@ namespace server {
                 }
                 else
                 {
-                    logger.log("ERROR", "server", ec.message());
+                    logger_.log("ERROR", "server", ec.message());
                 }
 
                 do_accept();
@@ -92,9 +92,9 @@ namespace server {
         signals.async_wait(
             [this](boost::system::error_code /* ec */, int /* signo */)
             {
-                logger.log("INFO", "server", "shutdown signal received");
+                logger_.log("INFO", "server", "shutdown signal received");
                 acceptor.close();
-                logger.log("INFO", "server", "acceptor closed");
+                logger_.log("INFO", "server", "acceptor closed");
             }
         );
     }

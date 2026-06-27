@@ -15,3 +15,6 @@ file(GLOB_RECURSE SOURCES
 
 # build executable (output goes to build/)
 add_executable(server ${SOURCES})
+
+find_package(Boost REQUIRED COMPONENTS json)
+target_link_libraries(server PRIVATE Boost::json)
