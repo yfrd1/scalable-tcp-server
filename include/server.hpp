@@ -10,13 +10,14 @@ using boost::asio::ip::tcp;
 namespace scalable {
 namespace server {
 
+class config;
+
 class server
 {
 public: 
 
 explicit server(boost::asio::io_context& io, 
-        const std::string& host, const std::string& port,
-        size_t thread_pool_size);
+        std::shared_ptr<config> cnf);
 
 void run();
 
@@ -28,9 +29,8 @@ void do_await_stop();
 boost::asio::io_context& io_context;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
-size_t max_thread_pool_size;
 logger logger_;
-
+std::shared_ptr<config> config_;
 };
 
 }

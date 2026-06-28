@@ -1,26 +1,35 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <iostream>
+#include <memory>
 #include "server.hpp"
 #include "logger.hpp"
+#include "config.hpp"
+
+using scalable::server::server;
+using scalable::server::config;
+using scalable::server::logger;
 
 int main(int argc, char* argv[])
 {
-    if(argc!=4)
+
+    std::shared_ptr<config> cnf { 
+        std::make_shared<config>("config.json") };
+
+    if(!cnf->load())
     {
-        std::cerr << "Usage: ./server <host> <port> <thread_pool_size>\n";
+        std::cerr << "config.json file not found\n";
         return 1;
     }
 
-    scalable::server::logger logger_;
+    logger logger_;
     logger_.log("INFO", "main", "program started");
 
     try
     {
         boost::asio::io_context io;
-
         logger_.log("INFO", "main", "Starting server...");
-        scalable::server::server server(io, argv[1], argv[2] , std::stoi(argv[3]));
+        server server(io, cnf);
         server.run();
 
         logger_.log("INFO", "main", "Server stopped");

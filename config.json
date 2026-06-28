@@ -9,7 +9,7 @@
 
     "thread_pool":
     {
-        "thread_count": 8
+        "thread_count": 2
     },
 
     "socket":

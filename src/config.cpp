@@ -4,7 +4,8 @@
 #include "config.hpp"
 
 namespace json = boost::json;
-
+#include<iostream>
+        
 namespace scalable {
 namespace server {
 
@@ -17,6 +18,7 @@ namespace server {
     bool config::load()
     {
         std::ifstream file(file_path_, std::ios::in);
+
         if(!file.is_open())
             return false;
 

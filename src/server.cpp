@@ -2,20 +2,20 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <memory>
 #include "logger.hpp"
 #include "server.hpp"
 #include "connection.hpp"
+#include "config.hpp"
 
 using boost::asio::ip::tcp;
 
 namespace scalable {
 namespace server {
 
-    server::server(boost::asio::io_context& io, 
-        const std::string& host, const std::string& port,
-        size_t thread_pool_size) :
+    server::server(boost::asio::io_context& io, std::shared_ptr<config> cnf) :
         io_context(io), acceptor(io), signals(io),
-        max_thread_pool_size(thread_pool_size)
+        config_(cnf)
     {
         logger_.log("INFO", "server", "initializing server");
 
@@ -27,30 +27,39 @@ namespace server {
 
         do_await_stop();
 
-        tcp::resolver resolve(io);
-        tcp::endpoint endpoint = *resolve.resolve(host, port).begin();
+        std::string host = config_->get_string("server.address");
+        int port = config_->get_int("server.port");
+        bool reuse_address = config_->get_bool("server.reuse_address");
+        int backlog = config_->get_int("server.backlog");
 
-        logger_.log("INFO", "server", "resolved endpoint " + host + ":" + port);
+        tcp::endpoint server_ep(
+            boost::asio::ip::address::from_string(host),
+            static_cast<unsigned short>(port));
 
-        acceptor.open(endpoint.protocol());
-        acceptor.set_option(tcp::acceptor::reuse_address(true));
-        acceptor.bind(endpoint);
-        acceptor.listen();
+        logger_.log("INFO", "server", "resolved endpoint " + host + ":" + std::to_string(port));
 
-        logger_.log("INFO", "server", "listening on " + host + ":" + port);
+        acceptor.open(server_ep.protocol());
+        acceptor.set_option(tcp::acceptor::reuse_address(reuse_address));
+        acceptor.bind(server_ep);
+        acceptor.listen(backlog);
+
+        logger_.log("INFO", "server", "listening on " + host + ":"  + std::to_string(port));
 
         do_accept();
     }
 
     void server::run()
     {
+        int thread_count = 
+            config_->get_int("thread_pool.thread_count");
+
         std::vector<std::thread> threads;
-        for(size_t i=0; i<max_thread_pool_size; ++i)
+        for(size_t i=0; i<thread_count; ++i)
         {
             threads.emplace_back([&]{ io_context.run(); });
         }
 
-        for(size_t i=0; i<max_thread_pool_size; ++i)
+        for(size_t i=0; i<thread_count; ++i)
         {
             threads[i].join();
         }
