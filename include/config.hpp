@@ -4,7 +4,6 @@
 #include <string>
 #include <boost/json.hpp>
 
-
 namespace scalable {
 namespace server {
     
