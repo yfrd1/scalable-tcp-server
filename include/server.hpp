@@ -3,6 +3,7 @@
 
 #include <boost/asio.hpp>
 #include <string>
+#include <atomic>
 #include "logger.hpp"
 
 using boost::asio::ip::tcp;
@@ -25,12 +26,17 @@ private:
 
 void do_accept();
 void do_await_stop();
+bool add_connection();
+void remove_connection();
 
 boost::asio::io_context& io_context;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
 logger logger_;
 std::shared_ptr<config> config_;
+std::atomic<size_t> active_connections{0};
+size_t max_connections{0};
+
 };
 
 }

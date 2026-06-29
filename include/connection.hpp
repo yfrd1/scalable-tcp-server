@@ -21,7 +21,7 @@ public:
 private:
     void read_data();
     void write_data(size_t length);
-
+   
     std::shared_ptr<config> config_;
     logger logger_;
     std::array<char, 512> data;

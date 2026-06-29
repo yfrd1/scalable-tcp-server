@@ -31,6 +31,7 @@ namespace server {
         int port = config_->get_int("server.port");
         bool reuse_address = config_->get_bool("server.reuse_address");
         int backlog = config_->get_int("server.backlog");
+        max_connections=config_->get_int("connections.max_connections");
 
         tcp::endpoint server_ep(
             boost::asio::ip::address::from_string(host),
@@ -79,12 +80,26 @@ namespace server {
                 if(!ec)
                 {
 
-                    tcp::endpoint ep = sock.remote_endpoint();
-                    logger_.log("INFO", "server", "client connected: " +
-                        ep.address().to_string() + ":" + 
-                            std::to_string(ep.port()));
+                    if(add_connection())
+                    {
+                        tcp::endpoint ep = sock.remote_endpoint();
+                        logger_.log("INFO", "server", "client connected: " +
+                            ep.address().to_string() + ":" + 
+                                std::to_string(ep.port()));
 
-                    std::make_shared<connection>(std::move(sock), logger_)->start();
+                        std::make_shared<connection>(std::move(sock), config_)->start();
+                    }
+                    else
+                    {
+                        logger_.log(
+                        "WARNING",
+                        "server",
+                        "Connection rejected, maximum connections reached: "+
+                        std::to_string(max_connections));
+
+                        boost::system::error_code ec;
+                        sock.close(ec);
+                    }
                 }
                 else
                 {
@@ -106,6 +121,25 @@ namespace server {
                 logger_.log("INFO", "server", "acceptor closed");
             }
         );
+    }
+
+    bool server::add_connection()
+    {
+        if(active_connections>=max_connections)
+        {
+            return false;
+        }
+
+        ++active_connections;
+        return true;
+    }
+
+    void server::remove_connection()
+    {
+        if(active_connections>0)
+        {
+            --active_connections;
+        }
     }
 
 }
