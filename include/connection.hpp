@@ -3,7 +3,7 @@
 
 #include <boost/asio.hpp>
 #include <memory>
-#include <array>
+#include <vector>
 #include "logger.hpp"
 #include "config.hpp"
 
@@ -24,7 +24,8 @@ private:
    
     std::shared_ptr<config> config_;
     logger logger_;
-    std::array<char, 512> data;
+    int max_message_size_bytes;
+    std::vector<char> data;
     tcp::socket socket;
 };
 

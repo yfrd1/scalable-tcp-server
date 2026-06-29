@@ -13,7 +13,9 @@ namespace server {
     connection::connection(tcp::socket sock, 
         std::shared_ptr<config>cnf) : 
         socket(std::move(sock)),
-        config_(cnf)
+        config_(cnf),
+        max_message_size_bytes{config_->get_int("connections.max_message_size_bytes")},
+        data(max_message_size_bytes)
     {
         logger_.log("INFO", "connection", "new connection created");
     }
@@ -45,6 +47,14 @@ namespace server {
             {
                 if(!ec)
                 {
+                    if(bytes>=max_message_size_bytes)
+                    {
+                            logger_.log("ERROR",
+                            "connection",
+                            "message too large: "+std::to_string(bytes)+" bytes");
+                            return;
+                    }
+
                     logger_.log("DEBUG", "connection", "data received: " + std::to_string(bytes));
                     write_data(bytes);
                 }
