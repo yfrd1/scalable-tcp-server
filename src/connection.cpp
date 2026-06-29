@@ -3,19 +3,35 @@
 #include <array>
 #include "connection.hpp"
 #include "logger.hpp"
+#include "config.hpp"
 
 using boost::asio::ip::tcp;
 
 namespace scalable {
 namespace server {
 
-    connection::connection(tcp::socket sock) : socket(std::move(sock))
+    connection::connection(tcp::socket sock, 
+        std::shared_ptr<config>cnf) : 
+        socket(std::move(sock)),
+        config_(cnf)
     {
         logger_.log("INFO", "connection", "new connection created");
     }
 
     void connection::start()
     {
+
+        boost::system::error_code ec;
+        bool no_dely = config_->get_bool("socket.tcp_no_delay");
+        bool keep_alive = config_->get_bool("socket.keep_alive");
+        socket.set_option(tcp::no_delay(no_dely), ec);
+        socket.set_option(tcp::socket::keep_alive(keep_alive), ec);
+        if(ec)
+        {
+            logger_.log("ERROR", "connection", ec.message());
+            return;
+        }
+
         logger_.log("INFO", "connection", "connection started reading");
         read_data();
     }
