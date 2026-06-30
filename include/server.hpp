@@ -21,6 +21,7 @@ explicit server(boost::asio::io_context& io,
         std::shared_ptr<config> cnf);
 
 void run();
+void stop();
 
 private:
 

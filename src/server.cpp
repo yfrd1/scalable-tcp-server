@@ -125,6 +125,12 @@ namespace server {
         );
     }
 
+    void server::stop()
+    {
+        work_guard.reset();
+        io_context.stop();
+    }
+
     bool server::add_connection()
     {
         if(active_connections>=max_connections)
