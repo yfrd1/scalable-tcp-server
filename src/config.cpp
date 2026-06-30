@@ -1,10 +1,10 @@
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <boost/json.hpp>
 #include "config.hpp"
 
 namespace json = boost::json;
-#include<iostream>
         
 namespace scalable {
 namespace server {
@@ -21,7 +21,7 @@ namespace server {
 
         if(!file.is_open())
             return false;
-
+            
         std::string config;
         char buffer[512];
         while(file.read(buffer, sizeof(buffer)))
@@ -44,7 +44,6 @@ namespace server {
         {
             return false;
         }
-
         root_ = json.as_object();
         
         return true;

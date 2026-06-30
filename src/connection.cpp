@@ -11,10 +11,10 @@ namespace scalable {
 namespace server {
 
     connection::connection(tcp::socket sock, 
-        std::shared_ptr<config>cnf) : 
+        config& cnf, logger& log) : 
         socket(std::move(sock)),
-        config_(cnf),
-        max_message_size_bytes{config_->get_int("connections.max_message_size_bytes")},
+        config_(cnf), logger_(log),
+        max_message_size_bytes{config_.get_int("connections.max_message_size_bytes")},
         data(max_message_size_bytes)
     {
         logger_.log("INFO", "connection", "new connection created");
@@ -24,8 +24,8 @@ namespace server {
     {
 
         boost::system::error_code ec;
-        bool no_dely = config_->get_bool("socket.tcp_no_delay");
-        bool keep_alive = config_->get_bool("socket.keep_alive");
+        bool no_dely = config_.get_bool("socket.tcp_no_delay");
+        bool keep_alive = config_.get_bool("socket.keep_alive");
         socket.set_option(tcp::no_delay(no_dely), ec);
         socket.set_option(tcp::socket::keep_alive(keep_alive), ec);
         if(ec)

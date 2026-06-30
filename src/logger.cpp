@@ -5,10 +5,13 @@
 #include <sstream>
 #include <filesystem>
 #include "logger.hpp"
+#include "config.hpp"
 
 namespace scalable {
 namespace server {
 
+    logger::logger(config& conf): config_(conf){}
+    
     std::string logger::getDate() {
         std::time_t t = std::time(nullptr);
         std::tm tm = *std::localtime(&t);

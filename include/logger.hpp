@@ -6,6 +6,7 @@
 #include <string>
 #include <ctime>
 #include <sstream>
+#include "config.hpp"
 
 namespace scalable {
 namespace server {
@@ -13,6 +14,8 @@ namespace server {
 class logger
 {
 public:
+    explicit logger(config& cnf);
+
     void log(const std::string& level,
              const std::string& module,
              const std::string& message);
@@ -22,6 +25,7 @@ private:
     std::string getDateTime();
     void openFileIfNeeded();
 
+    config& config_;
     std::ofstream file;
     std::string currentDate;
 };

@@ -13,11 +13,12 @@ using boost::asio::ip::tcp;
 namespace scalable {
 namespace server {
 
-    server::server(boost::asio::io_context& io, std::shared_ptr<config> cnf) :
+    server::server(boost::asio::io_context& io, config& cnf, logger& log) :
         io_context(io), 
         work_guard(boost::asio::make_work_guard(io_context)),
         acceptor(io), signals(io),
-        config_(cnf)
+        config_(cnf),
+        logger_(log)
     {
         logger_.log("INFO", "server", "initializing server");
 
@@ -29,11 +30,11 @@ namespace server {
 
         do_await_stop();
 
-        std::string host = config_->get_string("server.address");
-        int port = config_->get_int("server.port");
-        bool reuse_address = config_->get_bool("server.reuse_address");
-        int backlog = config_->get_int("server.backlog");
-        max_connections=config_->get_int("connections.max_connections");
+        std::string host = config_.get_string("server.address");
+        int port = config_.get_int("server.port");
+        bool reuse_address = config_.get_bool("server.reuse_address");
+        int backlog = config_.get_int("server.backlog");
+        max_connections=config_.get_int("connections.max_connections");
 
         tcp::endpoint server_ep(
             boost::asio::ip::address::from_string(host),
@@ -54,7 +55,7 @@ namespace server {
     void server::run()
     {
         int thread_count = 
-            config_->get_int("thread_pool.thread_count");
+            config_.get_int("thread_pool.thread_count");
 
         std::vector<std::thread> threads;
         for(size_t i=0; i<thread_count; ++i)
@@ -89,7 +90,7 @@ namespace server {
                             ep.address().to_string() + ":" + 
                                 std::to_string(ep.port()));
 
-                        std::make_shared<connection>(std::move(sock), config_)->start();
+                        std::make_shared<connection>(std::move(sock), config_, logger_)->start();
                     }
                     else
                     {
@@ -129,6 +130,7 @@ namespace server {
     {
         work_guard.reset();
         io_context.stop();
+        
     }
 
     bool server::add_connection()

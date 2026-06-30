@@ -13,23 +13,23 @@ using scalable::server::logger;
 int main(int argc, char* argv[])
 {
 
-    std::shared_ptr<config> cnf { 
-        std::make_shared<config>("config.json") };
+    config cnf("config.json");
 
-    if(!cnf->load())
+    if(!cnf.load())
     {
         std::cerr << "config.json file not found\n";
         return 1;
     }
 
-    logger logger_;
+    logger logger_(cnf);
+
     logger_.log("INFO", "main", "program started");
 
     try
     {
         boost::asio::io_context io;
         logger_.log("INFO", "main", "Starting server...");
-        server server(io, cnf);
+        server server(io, cnf, logger_);
         server.run();
 
         logger_.log("INFO", "main", "Server stopped");

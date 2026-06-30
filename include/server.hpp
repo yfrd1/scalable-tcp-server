@@ -5,20 +5,19 @@
 #include <string>
 #include <atomic>
 #include "logger.hpp"
+#include "config.hpp"
 
 using boost::asio::ip::tcp;
 
 namespace scalable {
 namespace server {
 
-class config;
-
 class server
 {
 public: 
 
 explicit server(boost::asio::io_context& io, 
-        std::shared_ptr<config> cnf);
+        config& cnf, logger& log);
 
 void run();
 void stop();
@@ -30,13 +29,13 @@ void do_await_stop();
 bool add_connection();
 void remove_connection();
 
+boost::asio::io_context& io_context;
 boost::asio::executor_work_guard
         <boost::asio::io_context::executor_type> work_guard;
-boost::asio::io_context& io_context;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
-logger logger_;
-std::shared_ptr<config> config_;
+logger& logger_;
+config& config_;
 std::atomic<size_t> active_connections{0};
 size_t max_connections{0};
 
