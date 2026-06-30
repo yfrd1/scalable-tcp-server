@@ -14,7 +14,9 @@ namespace scalable {
 namespace server {
 
     server::server(boost::asio::io_context& io, std::shared_ptr<config> cnf) :
-        io_context(io), acceptor(io), signals(io),
+        io_context(io), 
+        work_guard(boost::asio::make_work_guard(io_context)),
+        acceptor(io), signals(io),
         config_(cnf)
     {
         logger_.log("INFO", "server", "initializing server");
@@ -57,7 +59,7 @@ namespace server {
         std::vector<std::thread> threads;
         for(size_t i=0; i<thread_count; ++i)
         {
-            threads.emplace_back([&]{ io_context.run(); });
+            threads.emplace_back([this]{ io_context.run(); });
         }
 
         for(size_t i=0; i<thread_count; ++i)

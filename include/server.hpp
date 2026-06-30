@@ -29,6 +29,8 @@ void do_await_stop();
 bool add_connection();
 void remove_connection();
 
+boost::asio::executor_work_guard
+        <boost::asio::io_context::executor_type> work_guard;
 boost::asio::io_context& io_context;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
