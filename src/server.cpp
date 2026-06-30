@@ -119,15 +119,16 @@ namespace server {
         signals.async_wait(
             [this](boost::system::error_code /* ec */, int /* signo */)
             {
-                logger_.log("INFO", "server", "shutdown signal received");
-                acceptor.close();
-                logger_.log("INFO", "server", "acceptor closed");
+                stop();
             }
         );
     }
 
     void server::stop()
     {
+        logger_.log("INFO", "server", "shutdown started");
+                
+        acceptor.close();
         work_guard.reset();
         io_context.stop();
         
