@@ -5,3 +5,6 @@
 
 ## Message Handling
 - [ ] Improve async read buffer logic to correctly handle maximum message size across multiple reads.
+
+## Periodic Log Flushing
+- [ ] Implement periodic log flushing based on flush_interval_seconds.
