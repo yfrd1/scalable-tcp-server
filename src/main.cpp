@@ -26,6 +26,10 @@ int main(int argc, char* argv[])
     try
     {
         logger_= std::make_shared<logger>(cnf);
+        if(!logger_->getFileFolders())
+        {
+            throw std::invalid_argument("There is an error in path, name or extension of log file");
+        }
     }
     catch(const std::exception& e)
     {

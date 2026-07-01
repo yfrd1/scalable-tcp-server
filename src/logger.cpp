@@ -69,9 +69,49 @@ namespace server {
         return oss.str();
     }
 
+    bool logger::getFileFolders()
+    {
+        std::filesystem::path path(configFile);
+        std::string extension = path.extension().string();
+        if(!path.has_extension())
+        {
+            return false;
+        }
+        
+        if(extension!=".log" && extension!=".txt")
+        {
+            return false;
+        }
+        
+        std::string parent = path.parent_path().string();
+        if(!parent.empty())
+        {
+            std::error_code ec;
+            std::filesystem::create_directories(parent, ec);
+            if(ec)
+            {
+                return false;
+            }
+        }
+        
+        if(!parent.empty())
+        {
+            pathinfo.path = parent;
+            pathinfo.path.push_back(std::filesystem::path::preferred_separator);
+        }
+        else
+        {
+            pathinfo.path="";
+        }
+
+        pathinfo.name=path.stem().string();
+        pathinfo.extention=extension;
+
+        return true;
+    }
+
     void logger::openFileIfNeeded() {
 
-        std::filesystem::create_directories("logs");
 
         std::string today = getDate();
         if (today != currentDate) {
@@ -80,7 +120,7 @@ namespace server {
             if (file.is_open())
                 file.close();
 
-            std::string filename = "logs/server-" + currentDate + ".log";
+            std::string filename = pathinfo.path+pathinfo.name+"-" + currentDate + pathinfo.extention;
             file.open(filename, std::ios::app);
         }
     }

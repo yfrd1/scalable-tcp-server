@@ -6,6 +6,7 @@
 #include <string>
 #include <ctime>
 #include <sstream>
+#include <vector>
 #include "config.hpp"
 
 namespace scalable {
@@ -26,7 +27,10 @@ public:
         Emergency,
     };
 
+
     explicit logger(config& config_);
+
+    bool getFileFolders();
 
     void log(LogLevel level,
              const std::string& module,
@@ -38,13 +42,20 @@ private:
     void openFileIfNeeded();
     LogLevel getLevel(const std::string& level);
     const char* levelToString(LogLevel level);
-
     std::ofstream file;
     std::string currentDate;
 
     LogLevel configLevel;
     std::string configFile;
     int configIntervalSeconds;
+
+
+    struct logPathInfo
+    {
+        std::string path;
+        std::string name;
+        std::string extention;
+    } pathinfo;
 };
 
 }
