@@ -10,7 +10,38 @@
 namespace scalable {
 namespace server {
 
-    logger::logger(config& conf): config_(conf){}
+    logger::logger(config& config_)
+    {
+        configLevel=getLevel(config_.get_string("logging.level"));
+        configFile=config_.get_string("logging.file");
+        configIntervalSeconds=config_.get_int("logging.flush_interval_seconds");
+    }
+
+    logger::LogLevel logger::getLevel(const std::string& levelStr)
+    {
+        if(levelStr=="Debug") return LogLevel::Debug;
+        else if(levelStr=="Info") return LogLevel::Info;
+        else if(levelStr=="Notice") return LogLevel::Notice;
+        else if(levelStr=="Warning") return LogLevel::Warning;
+        else if(levelStr=="Error") return LogLevel::Error;
+        else if(levelStr=="Critical") return LogLevel::Critical;
+        else if(levelStr=="Alert") return LogLevel::Alert;
+        else if(levelStr=="Emergency") return LogLevel::Emergency;
+        else throw std::invalid_argument("Invalid log level");
+    }
+    
+    const char* logger::levelToString(LogLevel level)
+    {
+        if(level==LogLevel::Debug) return "Debug";
+        else if(level==LogLevel::Info) return "Info";
+        else if(level==LogLevel::Notice) return "Notice";
+        else if(level==LogLevel::Warning) return "Warning";
+        else if(level==LogLevel::Error) return "Error";
+        else if(level==LogLevel::Critical) return "Critical";
+        else if(level==LogLevel::Alert) return "Alert";
+        else if(level==LogLevel::Emergency) return "Emergency";
+        throw std::invalid_argument("Invalid log level");
+    }
     
     std::string logger::getDate() {
         std::time_t t = std::time(nullptr);
@@ -54,14 +85,19 @@ namespace server {
         }
     }
 
-    void logger::log(const std::string& level,
+    void logger::log(LogLevel level,
              const std::string& module,
              const std::string& message) {
+
+        if(level<configLevel)
+        {
+            return;
+        }
 
         openFileIfNeeded();
 
         file << getDateTime()
-             << " [" << level << "] "
+             << " [" << levelToString(level) << "] "
              << "[" << module << "] "
              << message << std::endl;
     }

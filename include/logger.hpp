@@ -14,9 +14,21 @@ namespace server {
 class logger
 {
 public:
-    explicit logger(config& cnf);
+    enum class LogLevel
+    {
+        Debug,
+        Info,
+        Notice,
+        Warning,
+        Error,
+        Critical,
+        Alert,
+        Emergency,
+    };
 
-    void log(const std::string& level,
+    explicit logger(config& config_);
+
+    void log(LogLevel level,
              const std::string& module,
              const std::string& message);
 
@@ -24,10 +36,15 @@ private:
     std::string getDate();    
     std::string getDateTime();
     void openFileIfNeeded();
+    LogLevel getLevel(const std::string& level);
+    const char* levelToString(LogLevel level);
 
-    config& config_;
     std::ofstream file;
     std::string currentDate;
+
+    LogLevel configLevel;
+    std::string configFile;
+    int configIntervalSeconds;
 };
 
 }

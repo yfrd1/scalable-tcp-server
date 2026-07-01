@@ -6,18 +6,19 @@
 #include "config.hpp"
 
 using boost::asio::ip::tcp;
+using LogLevel = scalable::server::logger::LogLevel;
 
 namespace scalable {
 namespace server {
 
     connection::connection(tcp::socket sock, 
-        config& cnf, logger& log) : 
+        config& cnf, std::shared_ptr<logger> log) : 
         socket(std::move(sock)),
         config_(cnf), logger_(log),
         max_message_size_bytes{config_.get_int("connections.max_message_size_bytes")},
         data(max_message_size_bytes)
     {
-        logger_.log("INFO", "connection", "new connection created");
+        logger_->log(LogLevel::Info, "connection", "new connection created");
     }
 
     void connection::start()
@@ -30,11 +31,11 @@ namespace server {
         socket.set_option(tcp::socket::keep_alive(keep_alive), ec);
         if(ec)
         {
-            logger_.log("ERROR", "connection", ec.message());
+            logger_->log(LogLevel::Error, "connection", ec.message());
             return;
         }
 
-        logger_.log("INFO", "connection", "connection started reading");
+        logger_->log(LogLevel::Info, "connection", "connection started reading");
         read_data();
     }
 
@@ -49,18 +50,18 @@ namespace server {
                 {
                     if(bytes>=max_message_size_bytes)
                     {
-                            logger_.log("ERROR",
+                            logger_->log(LogLevel::Error,
                             "connection",
                             "message too large: "+std::to_string(bytes)+" bytes");
                             return;
                     }
 
-                    logger_.log("DEBUG", "connection", "data received: " + std::to_string(bytes));
+                    logger_->log(LogLevel::Debug, "connection", "data received: " + std::to_string(bytes));
                     write_data(bytes);
                 }
                 else
                 {
-                    logger_.log("ERROR", "connection", ec.message());
+                    logger_->log(LogLevel::Error, "connection", ec.message());
                     return;
                 }
             }
@@ -77,7 +78,7 @@ namespace server {
             {
                 if(ec)
                 {
-                    logger_.log("ERROR", "connection", "write failed: " + ec.message());
+                    logger_->log(LogLevel::Error, "connection", "write failed: " + ec.message());
                 }
             }
         );

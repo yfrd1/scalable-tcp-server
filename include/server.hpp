@@ -17,7 +17,7 @@ class server
 public: 
 
 explicit server(boost::asio::io_context& io, 
-        config& cnf, logger& log);
+        config& cnf, std::shared_ptr<logger> log);
 
 void run();
 void stop();
@@ -34,7 +34,7 @@ boost::asio::executor_work_guard
         <boost::asio::io_context::executor_type> work_guard;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
-logger& logger_;
+std::shared_ptr<logger> logger_;
 config& config_;
 std::atomic<size_t> active_connections{0};
 size_t max_connections{0};

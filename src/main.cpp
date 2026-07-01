@@ -9,6 +9,7 @@
 using scalable::server::server;
 using scalable::server::config;
 using scalable::server::logger;
+using LogLevel = scalable::server::logger::LogLevel;
 
 int main(int argc, char* argv[])
 {
@@ -21,22 +22,31 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    logger logger_(cnf);
-
-    logger_.log("INFO", "main", "program started");
+    std::shared_ptr<logger> logger_;
+    try
+    {
+        logger_= std::make_shared<logger>(cnf);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
+    
+    logger_->log(LogLevel::Alert, "main", "program started");
 
     try
     {
         boost::asio::io_context io;
-        logger_.log("INFO", "main", "Starting server...");
+        logger_->log(LogLevel::Info, "main", "Starting server...");
         server server(io, cnf, logger_);
         server.run();
 
-        logger_.log("INFO", "main", "Server stopped");
+        logger_->log(LogLevel::Info, "main", "Server stopped");
     }
     catch(const std::exception& e)
     {
-        logger_.log("ERROR", "main", e.what());
+        logger_->log(LogLevel::Error, "main", e.what());
         return 1;
     }
     

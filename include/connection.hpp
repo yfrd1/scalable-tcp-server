@@ -15,14 +15,15 @@ namespace server {
 class connection : public std::enable_shared_from_this<connection>
 {
 public:
-    explicit connection(tcp::socket sock, config& cnf, logger& log);
+    explicit connection(tcp::socket sock, config& cnf, 
+        std::shared_ptr<logger> log);
     void start();
 
 private:
     void read_data();
     void write_data(size_t length);
    
-    logger& logger_;
+    std::shared_ptr<logger> logger_;
     config& config_;
     int max_message_size_bytes;
     std::vector<char> data;

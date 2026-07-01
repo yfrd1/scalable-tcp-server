@@ -9,18 +9,19 @@
 #include "config.hpp"
 
 using boost::asio::ip::tcp;
+using LogLevel = scalable::server::logger::LogLevel;
 
 namespace scalable {
 namespace server {
 
-    server::server(boost::asio::io_context& io, config& cnf, logger& log) :
+    server::server(boost::asio::io_context& io, config& cnf, std::shared_ptr<logger> log) :
         io_context(io), 
         work_guard(boost::asio::make_work_guard(io_context)),
         acceptor(io), signals(io),
         config_(cnf),
         logger_(log)
     {
-        logger_.log("INFO", "server", "initializing server");
+        logger_->log(LogLevel::Info, "server", "initializing server");
 
         signals.add(SIGINT);
         signals.add(SIGTERM);
@@ -40,14 +41,14 @@ namespace server {
             boost::asio::ip::address::from_string(host),
             static_cast<unsigned short>(port));
 
-        logger_.log("INFO", "server", "resolved endpoint " + host + ":" + std::to_string(port));
+        logger_->log(LogLevel::Info, "server", "resolved endpoint " + host + ":" + std::to_string(port));
 
         acceptor.open(server_ep.protocol());
         acceptor.set_option(tcp::acceptor::reuse_address(reuse_address));
         acceptor.bind(server_ep);
         acceptor.listen(backlog);
 
-        logger_.log("INFO", "server", "listening on " + host + ":"  + std::to_string(port));
+        logger_->log(LogLevel::Info, "server", "listening on " + host + ":"  + std::to_string(port));
 
         do_accept();
     }
@@ -86,7 +87,7 @@ namespace server {
                     if(add_connection())
                     {
                         tcp::endpoint ep = sock.remote_endpoint();
-                        logger_.log("INFO", "server", "client connected: " +
+                        logger_->log(LogLevel::Info, "server", "client connected: " +
                             ep.address().to_string() + ":" + 
                                 std::to_string(ep.port()));
 
@@ -94,8 +95,8 @@ namespace server {
                     }
                     else
                     {
-                        logger_.log(
-                        "WARNING",
+                        logger_->log(
+                        LogLevel::Warning,
                         "server",
                         "Connection rejected, maximum connections reached: "+
                         std::to_string(max_connections));
@@ -106,7 +107,7 @@ namespace server {
                 }
                 else
                 {
-                    logger_.log("ERROR", "server", ec.message());
+                    logger_->log(LogLevel::Error, "server", ec.message());
                 }
 
                 do_accept();
@@ -126,7 +127,7 @@ namespace server {
 
     void server::stop()
     {
-        logger_.log("INFO", "server", "shutdown started");
+        logger_->log(LogLevel::Info, "server", "shutdown started");
                 
         acceptor.close();
         work_guard.reset();
