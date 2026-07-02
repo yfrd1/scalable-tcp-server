@@ -13,12 +13,20 @@ namespace server {
 
     connection::connection(tcp::socket sock, 
         config& cnf, std::shared_ptr<logger> log) : 
-        socket(std::move(sock)),
+        socket(std::move(sock)), 
+        deadline(socket.get_executor()),
+        idle_deadline(socket.get_executor()),
         config_(cnf), logger_(log),
         max_message_size_bytes{config_.get_int("connections.max_message_size_bytes")},
         data(max_message_size_bytes)
     {
         logger_->log(LogLevel::Info, "connection", "new connection created");
+
+
+        read_timeout=config_.get_int("timeouts.read_timeout_seconds");
+        write_timeout=config_.get_int("timeouts.write_timeout_seconds");
+        idle_timeout=config_.get_int("timeouts.idle_timeout_seconds");
+    
     }
 
     void connection::start()
@@ -35,6 +43,12 @@ namespace server {
             return;
         }
 
+
+        deadline.expires_at(steady_timer::time_point::max());
+        idle_deadline.expires_at(steady_timer::time_point::max());
+        check_deadline();
+        check_idle();
+
         logger_->log(LogLevel::Info, "connection", "connection started reading");
         read_data();
     }
@@ -42,6 +56,9 @@ namespace server {
     void connection::read_data()
     {
         auto self { shared_from_this() };
+        deadline.expires_after(std::chrono::seconds(read_timeout));
+        idle_deadline.expires_after(std::chrono::seconds(idle_timeout));
+        
         socket.async_read_some(
             boost::asio::buffer(data),
             [this, self](boost::system::error_code ec, size_t bytes)
@@ -71,6 +88,9 @@ namespace server {
     void connection::write_data(size_t length)
     {
         auto  self { shared_from_this() };
+        deadline.expires_after(std::chrono::seconds(write_timeout));
+        idle_deadline.expires_after(std::chrono::seconds(idle_timeout));
+        
         boost::asio::async_write(
             socket, 
             boost::asio::buffer(data, length),
@@ -84,5 +104,45 @@ namespace server {
         );
     }
 
+    void connection::check_deadline()
+    {
+        auto self { shared_from_this() };
+        if(deadline.expiry()<steady_timer::clock_type::now())
+        {
+            boost::system::error_code ec;
+            socket.close(ec);
+            return;
+        }
+        deadline.async_wait(
+            [this, self](boost::system::error_code ec)
+            {
+                if(ec==boost::asio::error::operation_aborted)
+                    return;
+                    
+                check_deadline();
+            }
+        );
+    }
+
+    void connection::check_idle()
+    {
+        auto self { shared_from_this() };
+        if(idle_deadline.expiry() <= steady_timer::clock_type::now())
+        {
+            boost::system::error_code ec;
+            socket.close(ec);
+            return;
+        }
+        
+        idle_deadline.async_wait(
+            [this, self](boost::system::error_code ec)
+            {
+                if(ec==boost::asio::error::operation_aborted)
+                    return;
+
+                check_idle();
+            }
+        );
+    }
 }
 }

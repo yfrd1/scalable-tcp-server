@@ -8,6 +8,7 @@
 #include "config.hpp"
 
 using boost::asio::ip::tcp;
+using boost::asio::steady_timer;
 
 namespace scalable {
 namespace server {
@@ -22,12 +23,21 @@ public:
 private:
     void read_data();
     void write_data(size_t length);
-   
+    void check_deadline();
+    void check_idle();
+
     std::shared_ptr<logger> logger_;
     config& config_;
     int max_message_size_bytes;
     std::vector<char> data;
     tcp::socket socket;
+
+    steady_timer deadline;
+    steady_timer idle_deadline;
+
+    int read_timeout;
+    int write_timeout;
+    int idle_timeout;
 };
 
 }
