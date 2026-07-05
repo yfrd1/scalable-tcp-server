@@ -1,18 +1,33 @@
-CREATE DATABASE IF NOT EXISTS file_server
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS server_db
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 
-USE file_server;
+USE server_db;
 
 CREATE TABLE users
 (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    role TINYINT UNSIGNED NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP NULL DEFAULT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
-)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+);
+
+CREATE TABLE files
+(
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    stored_name VARCHAR(255) NOT NULL UNIQUE,
+    file_size BIGINT UNSIGNED NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    upload_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_files_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
+
