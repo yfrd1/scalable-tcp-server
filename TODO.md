@@ -1,5 +1,12 @@
 # TODO
 
+## Core Features
+- Add server file
+- Add chat room
+- Add video streaming
+
+## Implementation Details
+
 ## Connection Management
 - [ ] Replace active_connections counter logic with compare_exchange_weak/strong to enforce max_connections atomically.
 
@@ -8,3 +15,4 @@
 
 ## Periodic Log Flushing
 - [ ] Implement periodic log flushing based on flush_interval_seconds.
+
