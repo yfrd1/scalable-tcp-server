@@ -38,7 +38,7 @@ namespace server {
         max_connections=config_.get_int("connections.max_connections");
 
         tcp::endpoint server_ep(
-            boost::asio::ip::address::from_string(host),
+            boost::asio::ip::make_address(host),
             static_cast<unsigned short>(port));
 
         logger_->log(LogLevel::Info, "server", "resolved endpoint " + host + ":" + std::to_string(port));
