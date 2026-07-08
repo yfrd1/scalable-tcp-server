@@ -23,6 +23,7 @@ namespace server {
     {
         logger_->log(LogLevel::Info, "server", "initializing server");
 
+        signals.add(SIGHUP);
         signals.add(SIGINT);
         signals.add(SIGTERM);
         #ifdef SIGQUIT
@@ -118,9 +119,37 @@ namespace server {
     void server::do_await_stop()
     {
         signals.async_wait(
-            [this](boost::system::error_code /* ec */, int /* signo */)
+            [this](boost::system::error_code ec, int signo)
             {
-                stop();
+
+                if(ec)
+                {
+                    return;
+                }
+                else
+                {
+                    switch(signo)
+                    {
+                        case SIGTERM:
+                        case SIGINT:
+                        #ifdef SIGQUIT
+                        case SIGQUIT:
+                        #endif
+                            stop();
+                            return;
+                        case SIGHUP:
+                            try
+                            {
+                                config_.reload();   
+                            }
+                            catch(const std::exception& e)
+                            {
+                                std::cerr << e.what() << '\n';
+                            }
+                            do_await_stop();
+                            return;
+                    }
+                }
             }
         );
     }
