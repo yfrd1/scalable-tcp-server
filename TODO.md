@@ -11,7 +11,7 @@
 - [ ] Replace active_connections counter logic with compare_exchange_weak/strong to enforce max_connections atomically.
 
 ## Message Handling
-- [ ] Improve async read buffer logic to correctly handle maximum message size across multiple reads.
+- [ ] Improve async read buffer logic to correctly handle maximum message size (config::max_message_size_bytes) across multiple reads.
 
 ## Periodic Log Flushing
 - [ ] Implement periodic log flushing based on flush_interval_seconds.
