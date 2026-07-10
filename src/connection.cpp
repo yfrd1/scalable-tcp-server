@@ -1,6 +1,7 @@
 #include <boost/asio.hpp>
 #include <memory>
 #include <array>
+#include <cstdint>
 #include "connection.hpp"
 #include "logger.hpp"
 #include "config.hpp"
@@ -31,7 +32,6 @@ namespace server {
 
     void connection::start()
     {
-
         boost::system::error_code ec;
         bool no_dely = config_.get_bool("socket.tcp_no_delay");
         bool keep_alive = config_.get_bool("socket.keep_alive");
@@ -43,14 +43,68 @@ namespace server {
             return;
         }
 
-
         deadline.expires_at(steady_timer::time_point::max());
         idle_deadline.expires_at(steady_timer::time_point::max());
         check_deadline();
         check_idle();
 
         logger_->log(LogLevel::Info, "connection", "connection started reading");
-        read_data();
+        read_length();
+    }
+
+    
+    void connection::read_length()
+    {
+        auto self { shared_from_this() };
+        deadline.expires_after(std::chrono::seconds(read_timeout));
+        idle_deadline.expires_after(std::chrono::seconds(idle_timeout));
+        
+        boost::asio::async_read(
+            socket,
+            boost::asio::buffer(&packet_length, sizeof(packet_length)),
+            [this, self](boost::system::error_code ec, size_t bytes)
+            {
+                if(!ec)
+                {
+                    read_body();
+                }
+                else
+                {
+                    logger_->log(LogLevel::Error, "connection", ec.message());
+                    close();
+                    return;
+                }
+            }
+        );
+    }
+
+    void connection::read_body()
+    {
+        auto self { shared_from_this() };
+        deadline.expires_after(std::chrono::seconds(read_timeout));
+        idle_deadline.expires_after(std::chrono::seconds(idle_timeout));
+
+        packet_length=ntohl(packet_length);
+        packet_body.reserve(packet_length);
+
+        boost::asio::async_read(
+            socket,
+            boost::asio::buffer(packet_body, packet_length),
+            [this, self](boost::system::error_code ec, size_t bytes)
+            {
+                if(!ec)
+                {
+                    
+                }
+                else
+                {
+                    logger_->log(LogLevel::Error, "connection", ec.message());
+                    close();
+                    return;
+                }
+            }
+        );
+
     }
 
     void connection::read_data()
@@ -58,7 +112,7 @@ namespace server {
         auto self { shared_from_this() };
         deadline.expires_after(std::chrono::seconds(read_timeout));
         idle_deadline.expires_after(std::chrono::seconds(idle_timeout));
-        
+
         socket.async_read_some(
             boost::asio::buffer(data),
             [this, self](boost::system::error_code ec, size_t bytes)
@@ -144,5 +198,14 @@ namespace server {
             }
         );
     }
+
+    void connection::close()
+    {
+        boost::system::error_code ec;
+        socket.close(ec);
+        deadline.cancel();
+        idle_deadline.cancel();
+    }
+
 }
 }
