@@ -5,7 +5,7 @@
 #include <memory>
 #include "logger.hpp"
 #include "server.hpp"
-#include "connection.hpp"
+#include "session.hpp"
 #include "config.hpp"
 
 using boost::asio::ip::tcp;
@@ -92,7 +92,7 @@ namespace server {
                             ep.address().to_string() + ":" + 
                                 std::to_string(ep.port()));
 
-                        std::make_shared<connection>(std::move(sock), config_, logger_)->start();
+                        std::make_shared<session>(std::move(sock), config_, logger_)->start();
                     }
                     else
                     {

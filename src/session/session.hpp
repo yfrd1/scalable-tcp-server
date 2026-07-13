@@ -14,10 +14,10 @@ using boost::asio::steady_timer;
 namespace scalable {
 namespace server {
 
-class connection : public std::enable_shared_from_this<connection>
+class session : public std::enable_shared_from_this<session>
 {
 public:
-    explicit connection(tcp::socket sock, config& cnf, 
+    explicit session(tcp::socket sock, config& cnf, 
         std::shared_ptr<logger> log);
     void start();
 
