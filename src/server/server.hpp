@@ -37,7 +37,7 @@ boost::asio::signal_set signals;
 std::shared_ptr<logger> logger_;
 config& config_;
 std::atomic<size_t> active_connections{0};
-size_t max_connections{0};
+size_t max_sessions{0};
 
 };
 

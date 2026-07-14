@@ -18,7 +18,7 @@ namespace server {
         deadline(socket.get_executor()),
         idle_deadline(socket.get_executor()),
         config_(cnf), logger_(log),
-        max_message_size_bytes{config_.get_int("connections.max_message_size_bytes")},
+        max_message_size_bytes{config_.get_int("sessions.max_message_size_bytes")},
         data(max_message_size_bytes)
     {
         logger_->log(LogLevel::Info, "session", "new session created");

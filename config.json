@@ -18,9 +18,9 @@
         "keep_alive": true
     },
 
-    "connections":
+    "sessions":
     {
-        "max_connections": 10000,
+        "max_sessions": 10000,
         "max_message_size_bytes": 1048576
     },
 

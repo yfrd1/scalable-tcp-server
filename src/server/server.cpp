@@ -36,7 +36,7 @@ namespace server {
         int port = config_.get_int("server.port");
         bool reuse_address = config_.get_bool("server.reuse_address");
         int backlog = config_.get_int("server.backlog");
-        max_connections=config_.get_int("connections.max_connections");
+        max_sessions=config_.get_int("sessions.max_sessions");
 
         tcp::endpoint server_ep(
             boost::asio::ip::make_address(host),
@@ -99,8 +99,8 @@ namespace server {
                         logger_->log(
                         LogLevel::Warning,
                         "server",
-                        "Connection rejected, maximum connections reached: "+
-                        std::to_string(max_connections));
+                        "session rejected, maximum sessions reached: "+
+                        std::to_string(max_sessions));
 
                         boost::system::error_code ec;
                         sock.close(ec);
@@ -166,7 +166,7 @@ namespace server {
 
     bool server::add_connection()
     {
-        if(active_connections>=max_connections)
+        if(active_connections>=max_sessions)
         {
             return false;
         }
