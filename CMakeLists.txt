@@ -1,20 +1,25 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
-project(scalable_tcp_server)
+project(server)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# include directory
-include_directories(include)
-
-# collect all source files automatically
 file(GLOB_RECURSE SOURCES
-    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    src/*.cpp
 )
 
-# build executable (output goes to build/)
-add_executable(server ${SOURCES})
+add_executable(server
+    ${SOURCES}
+)
 
-find_package(Boost REQUIRED COMPONENTS json)
-target_link_libraries(server PRIVATE Boost::json)
+target_include_directories(server PRIVATE
+    src
+)
+
+find_package(Boost REQUIRED)
+
+target_link_libraries(server PRIVATE
+    Boost::boost
+    pthread
+)
