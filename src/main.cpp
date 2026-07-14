@@ -2,9 +2,9 @@
 #include <string>
 #include <iostream>
 #include <memory>
-#include "server.hpp"
-#include "logger.hpp"
-#include "config.hpp"
+#include "server/server.hpp"
+#include "logger/logger.hpp"
+#include "config/config.hpp"
 
 using scalable::server::server;
 using scalable::server::config;

@@ -14,7 +14,7 @@ add_executable(server
 )
 
 target_include_directories(server PRIVATE
-    src
+    ${CMAKE_SOURCE_DIR}/src
 )
 
 find_package(Boost REQUIRED)

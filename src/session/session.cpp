@@ -3,8 +3,8 @@
 #include <array>
 #include <cstdint>
 #include "session.hpp"
-#include "logger.hpp"
-#include "config.hpp"
+#include "logger/logger.hpp"
+#include "config/config.hpp"
 
 using boost::asio::ip::tcp;
 using LogLevel = scalable::server::logger::LogLevel;

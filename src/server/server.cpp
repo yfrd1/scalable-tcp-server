@@ -3,10 +3,10 @@
 #include <vector>
 #include <thread>
 #include <memory>
-#include "logger.hpp"
 #include "server.hpp"
-#include "session.hpp"
-#include "config.hpp"
+#include "logger/logger.hpp"
+#include "config/config.hpp"
+#include "session/session.hpp"
 
 using boost::asio::ip::tcp;
 using LogLevel = scalable::server::logger::LogLevel;

@@ -5,7 +5,7 @@
 #include <sstream>
 #include <filesystem>
 #include "logger.hpp"
-#include "config.hpp"
+#include "config/config.hpp"
 
 namespace scalable {
 namespace server {

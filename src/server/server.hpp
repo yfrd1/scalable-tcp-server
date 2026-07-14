@@ -4,8 +4,8 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <atomic>
-#include "logger.hpp"
-#include "config.hpp"
+#include "logger/logger.hpp"
+#include "config/config.hpp"
 
 using boost::asio::ip::tcp;
 

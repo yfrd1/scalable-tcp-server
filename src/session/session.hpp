@@ -5,8 +5,8 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
-#include "logger.hpp"
-#include "config.hpp"
+#include "logger/logger.hpp"
+#include "config/config.hpp"
 
 using boost::asio::ip::tcp;
 using boost::asio::steady_timer;
