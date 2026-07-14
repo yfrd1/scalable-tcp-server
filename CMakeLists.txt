@@ -17,9 +17,9 @@ target_include_directories(server PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
 
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS json)
 
 target_link_libraries(server PRIVATE
-    Boost::boost
+    Boost::json
     pthread
 )
