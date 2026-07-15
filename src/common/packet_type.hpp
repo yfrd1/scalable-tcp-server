@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-namespace scalabale::server {
+namespace scalable {
+namespace common {
 
 
 enum class PacketType : uint16_t 
@@ -13,4 +14,5 @@ enum class PacketType : uint16_t
 };
 
 
+}
 }
