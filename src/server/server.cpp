@@ -9,12 +9,12 @@
 #include "session/session.hpp"
 
 using boost::asio::ip::tcp;
-using LogLevel = scalable::server::logger::LogLevel;
+using LogLevel = scalable::server::Logger::LogLevel;
 
 namespace scalable {
 namespace server {
 
-    server::server(boost::asio::io_context& io, config& cnf, std::shared_ptr<logger> log) :
+    Server::Server(boost::asio::io_context& io, Config& cnf, std::shared_ptr<Logger> log) :
         io_context(io), 
         work_guard(boost::asio::make_work_guard(io_context)),
         acceptor(io), signals(io),
@@ -54,7 +54,7 @@ namespace server {
         do_accept();
     }
 
-    void server::run()
+    void Server::run()
     {
         int thread_count = 
             config_.get_int("thread_pool.thread_count");
@@ -71,7 +71,7 @@ namespace server {
         }
     }
 
-    void server::do_accept()
+    void Server::do_accept()
     {
         acceptor.async_accept(
             boost::asio::make_strand(io_context),
@@ -116,7 +116,7 @@ namespace server {
         );
     }
 
-    void server::do_await_stop()
+    void Server::do_await_stop()
     {
         signals.async_wait(
             [this](boost::system::error_code ec, int signo)
@@ -154,7 +154,7 @@ namespace server {
         );
     }
 
-    void server::stop()
+    void Server::stop()
     {
         logger_->log(LogLevel::Info, "server", "shutdown started");
                 
@@ -164,7 +164,7 @@ namespace server {
         
     }
 
-    bool server::add_connection()
+    bool Server::add_connection()
     {
         if(active_connections>=max_sessions)
         {
@@ -175,7 +175,7 @@ namespace server {
         return true;
     }
 
-    void server::remove_connection()
+    void Server::remove_connection()
     {
         if(active_connections>0)
         {

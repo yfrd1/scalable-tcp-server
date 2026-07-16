@@ -12,12 +12,12 @@ using boost::asio::ip::tcp;
 namespace scalable {
 namespace server {
 
-class server
+class Server
 {
 public: 
 
-explicit server(boost::asio::io_context& io, 
-        config& cnf, std::shared_ptr<logger> log);
+explicit Server(boost::asio::io_context& io, 
+        Config& cnf, std::shared_ptr<Logger> log);
 
 void run();
 void stop();
@@ -34,8 +34,8 @@ boost::asio::executor_work_guard
         <boost::asio::io_context::executor_type> work_guard;
 tcp::acceptor acceptor;
 boost::asio::signal_set signals;
-std::shared_ptr<logger> logger_;
-config& config_;
+std::shared_ptr<Logger> logger_;
+Config& config_;
 std::atomic<size_t> active_connections{0};
 size_t max_sessions{0};
 
