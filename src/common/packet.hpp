@@ -1,9 +1,29 @@
 #pragma once
 
+/*
+
++----------------+----------+---------------+--------------+
+| packet_size    | version  | message_type  | header_size  |
+| 4 bytes        | 1 byte   | 1 byte        | 2 bytes      |
++----------------+----------+---------------+--------------+
+| flags          | sequence_id                             |
+| 2 bytes        | 4 bytes                                 |
++----------------------------------------------------------+
+|                                                          |
+| headers (variable)                                       |
+|                                                          |
++----------------------------------------------------------+
+|                                                          |
+| payload (variable)                                       |
+|                                                          |
++----------------------------------------------------------+
+
+*/
+
+
 #include <string>
 #include <vector>
 #include "packet_type.hpp"
-#include "packet_header.hpp"
 
 namespace scalable {
 namespace common {
@@ -11,25 +31,9 @@ namespace common {
 class Packet
 {
 public:
-    Packet() = default;
-    Packet(const PacketHeader& header, 
-        std::vector<uint8_t> metadata,
-        std::vector<uint8_t> payload);
-
-    PacketHeader& get_header();
-    const PacketHeader& get_header() const;
-
-    std::vector<uint8_t>& get_metadata();
-    const std::vector<uint8_t>& get_metadata() const;
-    
-    std::vector<uint8_t>& get_payload();
-    const std::vector<uint8_t>& get_payload() const;    
-
     
 private:
-    PacketHeader header_;
-    std::vector<uint8_t> metadata_;
-    std::vector<uint8_t> payload_;
+
 };
 
 
