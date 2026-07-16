@@ -22,7 +22,7 @@ namespace server {
         config_(cnf),
         logger_(log)
     {
-        logger_->log(LogLevel::Info, "server", "initializing server");
+        logger_->log(LogLevel::Info, "Server", "initializing server");
 
         std::string host = config_.get_string("server.address");
         int port = config_.get_int("server.port");
@@ -34,14 +34,14 @@ namespace server {
             boost::asio::ip::make_address(host),
             static_cast<unsigned short>(port));
 
-        logger_->log(LogLevel::Info, "server", "resolved endpoint " + host + ":" + std::to_string(port));
+        logger_->log(LogLevel::Info, "Server", "resolved endpoint " + host + ":" + std::to_string(port));
 
         acceptor.open(server_ep.protocol());
         acceptor.set_option(tcp::acceptor::reuse_address(reuse_address));
         acceptor.bind(server_ep);
         acceptor.listen(backlog);
 
-        logger_->log(LogLevel::Info, "server", "listening on " + host + ":"  + std::to_string(port));
+        logger_->log(LogLevel::Info, "Server", "listening on " + host + ":"  + std::to_string(port));
     }
 
 
@@ -83,7 +83,7 @@ namespace server {
                     if(add_connection())
                     {
                         tcp::endpoint ep = sock.remote_endpoint();
-                        logger_->log(LogLevel::Info, "server", "client connected: " +
+                        logger_->log(LogLevel::Info, "Server", "client connected: " +
                             ep.address().to_string() + ":" + 
                                 std::to_string(ep.port()));
 
@@ -93,7 +93,7 @@ namespace server {
                     {
                         logger_->log(
                         LogLevel::Warning,
-                        "server",
+                        "Server",
                         "session rejected, maximum sessions reached: "+
                         std::to_string(max_sessions));
 
@@ -103,7 +103,7 @@ namespace server {
                 }
                 else
                 {
-                    logger_->log(LogLevel::Error, "server", ec.message());
+                    logger_->log(LogLevel::Error, "Server", ec.message());
                 }
 
                 do_accept();

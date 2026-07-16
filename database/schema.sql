@@ -31,7 +31,7 @@ CREATE TABLE files
         ON DELETE CASCADE
 );
 
-CREATE TABLE sessions
+CREATE TABLE login_sessions
 (
     session_id      CHAR(64) NOT NULL,
     user_id         BIGINT UNSIGNED NOT NULL,
@@ -42,10 +42,10 @@ CREATE TABLE sessions
 
     PRIMARY KEY (session_id),
 
-    INDEX idx_sessions_user_id (user_id),
-    INDEX idx_sessions_expires_at (expires_at),
+    INDEX idx_login_sessions_user_id (user_id),
+    INDEX idx_login_sessions_expires_at (expires_at),
 
-    CONSTRAINT fk_sessions_user
+    CONSTRAINT fk_login_sessions_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON DELETE CASCADE
@@ -53,5 +53,3 @@ CREATE TABLE sessions
 ENGINE = InnoDB
 DEFAULT CHARSET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
-
-

@@ -7,21 +7,21 @@
 #include "config/config.hpp"
 
 using boost::asio::ip::tcp;
-using LogLevel = scalable::server::logger::LogLevel;
+using LogLevel = scalable::server::Logger::LogLevel;
 
 namespace scalable {
 namespace server {
 
-    session::session(tcp::socket sock, 
-        config& cnf, std::shared_ptr<logger> log) : 
+    Session::Session(tcp::socket sock, 
+        Config& config, std::shared_ptr<Logger> logger) : 
         socket(std::move(sock)), 
         deadline(socket.get_executor()),
         idle_deadline(socket.get_executor()),
-        config_(cnf), logger_(log),
+        config_(config), logger_(logger),
         max_message_size_bytes{config_.get_int("sessions.max_message_size_bytes")},
         data(max_message_size_bytes)
     {
-        logger_->log(LogLevel::Info, "session", "new session created");
+        logger_->log(LogLevel::Info, "Session", "new session created");
 
 
         read_timeout=config_.get_int("timeouts.read_timeout_seconds");
@@ -30,7 +30,7 @@ namespace server {
     
     }
 
-    void session::start()
+    void Session::start()
     {
         boost::system::error_code ec;
         bool no_dely = config_.get_bool("socket.tcp_no_delay");
@@ -39,7 +39,7 @@ namespace server {
         socket.set_option(tcp::socket::keep_alive(keep_alive), ec);
         if(ec)
         {
-            logger_->log(LogLevel::Error, "session", ec.message());
+            logger_->log(LogLevel::Error, "Session", ec.message());
             return;
         }
 
@@ -48,12 +48,12 @@ namespace server {
         check_deadline();
         check_idle();
 
-        logger_->log(LogLevel::Info, "session", "session started reading");
+        logger_->log(LogLevel::Info, "Session", "session started reading");
         read_length();
     }
 
     
-    void session::read_length()
+    void Session::read_length()
     {
         auto self { shared_from_this() };
         deadline.expires_after(std::chrono::seconds(read_timeout));
@@ -70,7 +70,7 @@ namespace server {
                 }
                 else
                 {
-                    logger_->log(LogLevel::Error, "session", ec.message());
+                    logger_->log(LogLevel::Error, "Session", ec.message());
                     close();
                     return;
                 }
@@ -78,7 +78,7 @@ namespace server {
         );
     }
 
-    void session::read_body()
+    void Session::read_body()
     {
         auto self { shared_from_this() };
         deadline.expires_after(std::chrono::seconds(read_timeout));
@@ -98,7 +98,7 @@ namespace server {
                 }
                 else
                 {
-                    logger_->log(LogLevel::Error, "session", ec.message());
+                    logger_->log(LogLevel::Error, "Session", ec.message());
                     close();
                     return;
                 }
@@ -107,7 +107,7 @@ namespace server {
 
     }
 
-    void session::read_data()
+    void Session::read_data()
     {
         auto self { shared_from_this() };
         deadline.expires_after(std::chrono::seconds(read_timeout));
@@ -122,24 +122,24 @@ namespace server {
                     if(bytes>=max_message_size_bytes)
                     {
                             logger_->log(LogLevel::Error,
-                            "session",
+                            "Session",
                             "message too large: "+std::to_string(bytes)+" bytes");
                             return;
                     }
 
-                    logger_->log(LogLevel::Debug, "session", "data received: " + std::to_string(bytes));
+                    logger_->log(LogLevel::Debug, "Session", "data received: " + std::to_string(bytes));
                     write_data(bytes);
                 }
                 else
                 {
-                    logger_->log(LogLevel::Error, "session", ec.message());
+                    logger_->log(LogLevel::Error, "Session", ec.message());
                     return;
                 }
             }
         );
     }
 
-    void session::write_data(size_t length)
+    void Session::write_data(size_t length)
     {
         auto  self { shared_from_this() };
         deadline.expires_after(std::chrono::seconds(write_timeout));
@@ -152,13 +152,13 @@ namespace server {
             {
                 if(ec)
                 {
-                    logger_->log(LogLevel::Error, "session", "write failed: " + ec.message());
+                    logger_->log(LogLevel::Error, "Session", "write failed: " + ec.message());
                 }
             }
         );
     }
 
-    void session::check_deadline()
+    void Session::check_deadline()
     {
         auto self { shared_from_this() };
         if(deadline.expiry()<steady_timer::clock_type::now())
@@ -178,7 +178,7 @@ namespace server {
         );
     }
 
-    void session::check_idle()
+    void Session::check_idle()
     {
         auto self { shared_from_this() };
         if(idle_deadline.expiry() <= steady_timer::clock_type::now())
@@ -199,7 +199,7 @@ namespace server {
         );
     }
 
-    void session::close()
+    void Session::close()
     {
         boost::system::error_code ec;
         socket.close(ec);
