@@ -3,7 +3,7 @@
 namespace scalable {
 namespace server {
 
-class Router
+class ThreadPool
 {
 public:
 
