@@ -12,7 +12,7 @@
 namespace scalable {
 namespace server {
 
-class logger
+class Logger
 {
 public:
     enum class LogLevel
@@ -28,7 +28,7 @@ public:
     };
 
 
-    explicit logger(config& config_);
+    explicit Logger(config& config_);
 
     bool getFileFolders();
 

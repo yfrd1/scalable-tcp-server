@@ -10,14 +10,14 @@
 namespace scalable {
 namespace server {
 
-    logger::logger(config& config_)
+    Logger::Logger(config& config_)
     {
         configLevel=getLevel(config_.get_string("logging.level"));
         configFile=config_.get_string("logging.file");
         configIntervalSeconds=config_.get_int("logging.flush_interval_seconds");
     }
 
-    logger::LogLevel logger::getLevel(const std::string& levelStr)
+    Logger::LogLevel Logger::getLevel(const std::string& levelStr)
     {
         if(levelStr=="Debug") return LogLevel::Debug;
         else if(levelStr=="Info") return LogLevel::Info;
@@ -30,7 +30,7 @@ namespace server {
         else throw std::invalid_argument("Invalid log level");
     }
     
-    const char* logger::levelToString(LogLevel level)
+    const char* Logger::levelToString(LogLevel level)
     {
         if(level==LogLevel::Debug) return "Debug";
         else if(level==LogLevel::Info) return "Info";
@@ -43,7 +43,7 @@ namespace server {
         throw std::invalid_argument("Invalid log level");
     }
     
-    std::string logger::getDate() {
+    std::string Logger::getDate() {
         std::time_t t = std::time(nullptr);
         std::tm tm = *std::localtime(&t);
 
@@ -54,7 +54,7 @@ namespace server {
         return oss.str();
     }
 
-    std::string logger::getDateTime() {
+    std::string Logger::getDateTime() {
         std::time_t t = std::time(nullptr);
         std::tm tm = *std::localtime(&t);
 
@@ -69,7 +69,7 @@ namespace server {
         return oss.str();
     }
 
-    bool logger::getFileFolders()
+    bool Logger::getFileFolders()
     {
         std::filesystem::path path(configFile);
         std::string extension = path.extension().string();
@@ -110,7 +110,7 @@ namespace server {
         return true;
     }
 
-    void logger::openFileIfNeeded() {
+    void Logger::openFileIfNeeded() {
 
 
         std::string today = getDate();
@@ -125,7 +125,7 @@ namespace server {
         }
     }
 
-    void logger::log(LogLevel level,
+    void Logger::log(LogLevel level,
              const std::string& module,
              const std::string& message) {
 

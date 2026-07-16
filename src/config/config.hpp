@@ -7,9 +7,9 @@
 namespace scalable {
 namespace server {
     
-class config {
+class Config {
 public:
-    explicit config(const std::string& file_path);
+    explicit Config(const std::string& file_path);
 
     // Load JSON file into memory
     bool load();

@@ -9,13 +9,13 @@ namespace json = boost::json;
 namespace scalable {
 namespace server {
 
-    config::config(const std::string& file_path) :
+    Config::Config(const std::string& file_path) :
         file_path_(file_path) 
     { 
         load();
     }
 
-    bool config::load()
+    bool Config::load()
     {
         std::ifstream file(file_path_, std::ios::in);
 
@@ -49,12 +49,12 @@ namespace server {
         return true;
     }
 
-    bool config::reload()
+    bool Config::reload()
     {
         return load();
     }
  
-    json::value config::get(const std::string& key) const
+    json::value Config::get(const std::string& key) const
     {
         auto value = find_key(key);
         if(value.is_null())
@@ -64,7 +64,7 @@ namespace server {
         return value;
     }
 
-    std::string config::get_string(
+    std::string Config::get_string(
         const std::string& key, 
         const std::string& default_value) const
     {
@@ -78,7 +78,7 @@ namespace server {
         return std::string(value.as_string());
     }
 
-    int config::get_int(
+    int Config::get_int(
         const std::string& key, 
         int default_value) const
     {
@@ -94,7 +94,7 @@ namespace server {
         return default_value;
     }
 
-    bool config::get_bool(
+    bool Config::get_bool(
         const std::string& key, 
         bool default_value) const
     {
@@ -110,12 +110,12 @@ namespace server {
 
 
 
-    bool config::has(const std::string& key) const
+    bool Config::has(const std::string& key) const
     {
         return !find_key(key).is_null();
     }
 
-    json::value config::find_key(const std::string& key) const
+    json::value Config::find_key(const std::string& key) const
     {
         size_t index_of_dot = key.find('.');
 
