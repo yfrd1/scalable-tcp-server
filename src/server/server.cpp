@@ -14,23 +14,15 @@ using LogLevel = scalable::server::Logger::LogLevel;
 namespace scalable {
 namespace server {
 
-    Server::Server(boost::asio::io_context& io, Config& cnf, std::shared_ptr<Logger> log) :
-        io_context(io), 
-        work_guard(boost::asio::make_work_guard(io_context)),
-        acceptor(io), signals(io),
+    Server::Server(boost::asio::io_context& io, 
+        Config& cnf, 
+        std::shared_ptr<Logger> log) :
+        io_context_(io),
+        acceptor(io),
         config_(cnf),
         logger_(log)
     {
         logger_->log(LogLevel::Info, "server", "initializing server");
-
-        signals.add(SIGHUP);
-        signals.add(SIGINT);
-        signals.add(SIGTERM);
-        #ifdef SIGQUIT
-        signals.add(SIGQUIT);
-        #endif
-
-        do_await_stop();
 
         std::string host = config_.get_string("server.address");
         int port = config_.get_int("server.port");
@@ -50,31 +42,34 @@ namespace server {
         acceptor.listen(backlog);
 
         logger_->log(LogLevel::Info, "server", "listening on " + host + ":"  + std::to_string(port));
-
-        do_accept();
     }
 
-    void Server::run()
+
+    void Server::start_workers()
     {
         int thread_count = 
             config_.get_int("thread_pool.thread_count");
-
         std::vector<std::thread> threads;
         for(size_t i=0; i<thread_count; ++i)
         {
-            threads.emplace_back([this]{ io_context.run(); });
+            threads.emplace_back([this]{ io_context_.run(); });
         }
-
         for(size_t i=0; i<thread_count; ++i)
         {
             threads[i].join();
         }
     }
 
+    void Server::start_accept()
+    {
+        if(acceptor.is_open())
+            do_accept();
+    }
+
     void Server::do_accept()
     {
         acceptor.async_accept(
-            boost::asio::make_strand(io_context),
+            boost::asio::make_strand(io_context_),
             [this](boost::system::error_code ec, tcp::socket sock)
             {
                 if(!acceptor.is_open())
@@ -116,52 +111,11 @@ namespace server {
         );
     }
 
-    void Server::do_await_stop()
-    {
-        signals.async_wait(
-            [this](boost::system::error_code ec, int signo)
-            {
-
-                if(ec)
-                {
-                    return;
-                }
-                else
-                {
-                    switch(signo)
-                    {
-                        case SIGTERM:
-                        case SIGINT:
-                        #ifdef SIGQUIT
-                        case SIGQUIT:
-                        #endif
-                            stop();
-                            return;
-                        case SIGHUP:
-                            try
-                            {
-                                config_.reload();   
-                            }
-                            catch(const std::exception& e)
-                            {
-                                std::cerr << e.what() << '\n';
-                            }
-                            do_await_stop();
-                            return;
-                    }
-                }
-            }
-        );
-    }
 
     void Server::stop()
     {
-        logger_->log(LogLevel::Info, "server", "shutdown started");
-                
+        logger_->log(LogLevel::Info, "Server", "Stop acceptor");
         acceptor.close();
-        work_guard.reset();
-        io_context.stop();
-        
     }
 
     bool Server::add_connection()

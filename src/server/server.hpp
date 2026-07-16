@@ -19,7 +19,8 @@ public:
 explicit Server(boost::asio::io_context& io, 
         Config& cnf, std::shared_ptr<Logger> log);
 
-void run();
+void start_workers();
+void start_accept();
 void stop();
 
 private:
@@ -29,11 +30,8 @@ void do_await_stop();
 bool add_connection();
 void remove_connection();
 
-boost::asio::io_context& io_context;
-boost::asio::executor_work_guard
-        <boost::asio::io_context::executor_type> work_guard;
+boost::asio::io_context& io_context_;
 tcp::acceptor acceptor;
-boost::asio::signal_set signals;
 std::shared_ptr<Logger> logger_;
 Config& config_;
 std::atomic<size_t> active_connections{0};

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
 #include "config/config.hpp"
@@ -17,22 +18,30 @@ namespace server {
 class Application
 {
 public:
+    explicit Application();
+
+    void run();
+    void stop();
+    void do_await_stop();;
 
 private:
-    Config config_;
-    Logger logger_;
-    
     boost::asio::io_context io_context_;
+    boost::asio::executor_work_guard
+        <boost::asio::io_context::executor_type> work_guard_;
+    boost::asio::signal_set signals_;
+
+    Config config_;
+    std::shared_ptr<Logger> logger_;
     
     ThreadPool thread_pool_;
     BufferPool buffer_pool_;
-    mysql::connection_pool connection_pool_;
+    //mysql::connection_pool connection_pool_;
 
     // Router is shared across all sessions because routing depends only
     // on packet type and does not store any session-specific state.
     Router router_;
 
-    Server server_;
+    std::unique_ptr<Server> server_;
 };
 
 }
