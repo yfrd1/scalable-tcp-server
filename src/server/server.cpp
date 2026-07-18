@@ -87,7 +87,7 @@ namespace server {
                             ep.address().to_string() + ":" + 
                                 std::to_string(ep.port()));
 
-                        std::make_shared<session>(std::move(sock), config_, logger_)->start();
+                        std::make_shared<Session>(std::move(sock), config_, logger_)->start();
                     }
                     else
                     {
