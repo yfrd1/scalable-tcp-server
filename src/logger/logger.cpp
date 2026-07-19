@@ -10,7 +10,7 @@
 namespace scalable {
 namespace server {
 
-    Logger::Logger(config& config_)
+    Logger::Logger(Config& config_)
     {
         configLevel=getLevel(config_.get_string("logging.level"));
         configFile=config_.get_string("logging.file");

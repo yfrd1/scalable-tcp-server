@@ -51,24 +51,6 @@ class Packet
 {
 public:
 
-    uint32_t packet_size() const;
-    void packet_size(uint32_t size);
-
-    uint8_t version() const;
-    void version(uint8_t version);
-
-    uint8_t packet_type() const;
-    void packet_type(uint8_t type);
-
-    uint16_t header_size() const;
-    void header_size(uint16_t size);
-
-    uint16_t flags() const;
-    void flags(uint16_t flags);
-
-    uint32_t sequence_id() const;
-    void sequence_id(uint32_t id);
-
     
     
 private:

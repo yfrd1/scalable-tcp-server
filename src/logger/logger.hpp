@@ -28,7 +28,7 @@ public:
     };
 
 
-    explicit Logger(config& config_);
+    explicit Logger(Config& config_);
 
     bool getFileFolders();
 
