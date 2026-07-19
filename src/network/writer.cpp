@@ -35,9 +35,7 @@ namespace server {
     }
 
     void Writer::write()
-    {
-        std::cout<<"Reader::read_body "<<queue_buffer_.front().data()<<'\n';
-                    
+    {       
         auto self = shared_from_this();
         boost::asio::async_write(socket_,
             boost::asio::buffer(queue_buffer_.front(), 
@@ -46,7 +44,6 @@ namespace server {
             {
                 if(!ec)
                 {
-                    std::cout<<"Writed\n";
                     self->queue_buffer_.pop_front();
                     if(!self->queue_buffer_.empty())
                         self->write();

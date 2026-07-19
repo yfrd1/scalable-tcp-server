@@ -28,7 +28,6 @@ namespace server {
                 {
                     self->packet_length_=
                         ntohl(self->packet_length_);
-                    std::cout<<"self->packet_length_= "<<self->packet_length_<<'\n';
 
                     self->read_body();
                 }
@@ -51,7 +50,6 @@ namespace server {
     {
         auto self = shared_from_this();
         packet_buffer_.resize(packet_length_);
-        std::cout<<"Reader::read_body "<<packet_length_<<'\n';
 
         boost::asio::async_read(
             socket_,
@@ -62,14 +60,11 @@ namespace server {
 
                 if(!session)
                 {
-                    std::cout<<"read body if(!session)\n";
                     //Session destroyed
                     return;
                 }
                 else if(!ec)
                 {
-                    std::cout<<"Reader::read_body "<<self->packet_buffer_.data()<<'\n';
-
                     session->on_packet(
                         std::move(self->packet_buffer_));
 
@@ -77,7 +72,6 @@ namespace server {
                 }
                 else
                 {
-                    std::cout<<ec;
                     if(ec!=boost::asio::error::operation_aborted)
                     {
                         session->stop();

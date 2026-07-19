@@ -39,7 +39,6 @@ namespace server {
 
     void Session::read_packet()
     {
-        std::cout<<"Session::read_packet()\n";
         reader_->read_length();
     }
 
@@ -50,7 +49,6 @@ namespace server {
 
     void Session::write_packet(std::vector<uint8_t> packet)
     {
-        std::cout<<"Session::write_packet, "<<packet.size()<<'\n';
         writer_->add_packet(std::move(packet));
     }
 
