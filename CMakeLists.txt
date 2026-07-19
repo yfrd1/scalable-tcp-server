@@ -18,8 +18,11 @@ target_include_directories(server PRIVATE
 )
 
 find_package(Boost REQUIRED COMPONENTS json)
+find_package(OpenSSL REQUIRED)
 
 target_link_libraries(server PRIVATE
     Boost::json
+    OpenSSL::SSL
+    OpenSSL::Crypto
     pthread
 )
