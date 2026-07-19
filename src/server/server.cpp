@@ -3,6 +3,7 @@
 #include <vector>
 #include <thread>
 #include <memory>
+#include <mutex>
 #include "server.hpp"
 #include "logger/logger.hpp"
 #include "config/config.hpp"
@@ -87,7 +88,22 @@ namespace server {
                             ep.address().to_string() + ":" + 
                                 std::to_string(ep.port()));
 
-                        std::make_shared<Session>(std::move(sock), config_, logger_)->start();
+                        std::shared_ptr<Session> session=
+                            std::make_shared<Session>(
+                                std::move(sock), config_, logger_,
+                                [this](std::shared_ptr<Session> session_ptr){
+                                    remove_session(session_ptr);
+                                }
+                            );
+
+                        session->start();
+                        
+                        //Uniqe Lock
+                        {
+                            std::unique_lock<std::mutex> lck(session_mutex_);
+                            sessions_.insert(session);
+                        }
+
                     }
                     else
                     {
@@ -111,6 +127,12 @@ namespace server {
         );
     }
 
+    void Server::remove_session(
+        std::shared_ptr<Session> session)
+    {
+        std::unique_lock<std::mutex> lck(session_mutex_);
+        sessions_.erase(session);
+    }
 
     void Server::stop()
     {

@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <functional>
 #include "logger/logger.hpp"
 #include "config/config.hpp"
 #include "network/reader.hpp"
@@ -21,8 +22,12 @@ namespace server {
 class Session : public std::enable_shared_from_this<Session>
 {
 public:
-    explicit Session(tcp::socket socket, Config& config, 
-        std::shared_ptr<Logger> logger);
+    explicit Session(
+        tcp::socket socket, 
+        Config& config, 
+        std::shared_ptr<Logger> logger,
+        std::function<void(std::shared_ptr<Session>)> on_close);
+
     void start();
 
     void read_packet();
@@ -34,7 +39,10 @@ private:
     tcp::socket socket_;
     std::shared_ptr<Logger> logger_;
     Config& config_;
-    
+    std::function<void(std::shared_ptr<Session>)> 
+        on_close_;
+    bool stopped_=false;
+
     std::shared_ptr<Reader> reader_;
     std::shared_ptr<Writer> writer_;
 
