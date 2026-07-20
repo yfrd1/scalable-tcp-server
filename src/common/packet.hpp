@@ -42,7 +42,7 @@ Notes:
 
 #include <cstdint>
 #include <vector>
-
+#include "common/packet_type.hpp"
 
 namespace scalable {
 namespace common {
@@ -50,20 +50,52 @@ namespace common {
 class Packet
 {
 public:
+    explicit Packet(std::vector<uint8_t>&& bytes);
 
-    
-    
+    static Packet create(
+        uint8_t version,
+        PacketType packet_type,
+        uint16_t flags,
+        uint32_t sequence_id,
+        std::vector<uint8_t>&& headers,
+        std::vector<uint8_t>&& payload
+    );
+
+    uint32_t packet_size() const;
+    uint8_t version() const;
+    PacketType packet_type() const;
+    uint16_t header_size() const;
+    uint16_t flags() const;
+    uint32_t sequence_id() const;
+    uint32_t payload_size() const;
+    uint32_t buffer_size() const;
+
+    const uint8_t* headers() const;
+    const uint8_t* payload() const;
+    const uint8_t* buffer() const;
+
 private:
+    /*
+    void packet_size(uint32_t size);
+    void version(uint8_t version);
+    void packet_type(PacketType type);
+    void header_size(uint16_t size);
+    void flags(uint16_t flags);
+    void sequence_id(uint32_t id);
+    */
+   
     uint32_t packet_size_;
     uint8_t version_;
-    uint8_t packet_type_;
+    PacketType packet_type_;
     uint16_t header_size_;
     uint16_t flags_;
     uint32_t sequence_id_;
 
-    size_t headers_offset_;
-    size_t payload_offset_;
-
+    uint16_t headers_offset_;
+    uint16_t headers_size_;
+    uint32_t payload_offset_;
+    uint32_t payload_size_;
+    
     std::vector<uint8_t> buffer_;
 };
 

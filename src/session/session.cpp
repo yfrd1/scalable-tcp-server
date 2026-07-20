@@ -44,7 +44,7 @@ namespace server {
 
     void Session::on_packet(std::vector<uint8_t> packet)
     {
-        write_packet(std::move(packet));
+        //Deserialize packet bytes on a Packet object
     }   
 
     void Session::write_packet(std::vector<uint8_t> packet)
