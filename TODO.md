@@ -21,3 +21,6 @@
 
 ## Packet sequence ID
 - [ ] Implement Packet sequence ID validation and ordering system
+
+## localization layer for server
+- [ ] Add localization layer for server responses, errors, and messages
