@@ -27,3 +27,6 @@
 
 ## Header parsers
 - [ ] Add header parsers for each packet type and validate that the parsed header size exactly matches `header_size_`.
+
+## Timeout handling 
+- [ ] Add idle timeout, read/write timeout, and connection timeout handling for all network operations.
