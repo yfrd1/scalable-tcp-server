@@ -22,5 +22,8 @@
 ## Packet sequence ID
 - [ ] Implement Packet sequence ID validation and ordering system
 
-## localization layer for server
+## Localization layer for server
 - [ ] Add localization layer for server responses, errors, and messages
+
+## Header parsers
+- [ ] Add header parsers for each packet type and validate that the parsed header size exactly matches `header_size_`.
