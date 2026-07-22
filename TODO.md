@@ -16,3 +16,5 @@
 ## Periodic Log Flushing
 - [ ] Implement periodic log flushing based on flush_interval_seconds.
 
+## Packet encryption/decryption
+- [ ] Implement Packet payload compression and encryption/decryption
