@@ -18,3 +18,6 @@
 
 ## Packet encryption/decryption
 - [ ] Implement Packet payload compression and encryption/decryption
+
+## Packet sequence ID
+- [ ] Implement Packet sequence ID validation and ordering system
