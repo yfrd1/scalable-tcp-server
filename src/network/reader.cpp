@@ -1,6 +1,7 @@
 #include <boost/asio.hpp>
 #include "reader.hpp"
 #include "session/session.hpp"
+#include "common/packet.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -29,6 +30,17 @@ namespace server {
                     self->packet_length_=
                         ntohl(self->packet_length_);
 
+                    if(self->packet_length_ >
+                        Packet::MAX_PACKET_SIZE)
+                    {
+                        if(auto session=
+                            self->session_.lock())
+                        {
+                            session->stop();
+                        }
+                        return;
+                    }
+
                     self->read_body();
                 }
                 else
@@ -40,6 +52,7 @@ namespace server {
                             self->session_.lock())
                         {
                             session->stop();
+                            return;
                         }   
                     }
                 }
@@ -49,11 +62,20 @@ namespace server {
     void Reader::read_body()
     {
         auto self = shared_from_this();
-        packet_buffer_.resize(packet_length_);
 
+        // Add packet length to buffer 
+        packet_buffer_.resize(packet_length_ + Packet::PACKET_LENGTH);
+
+        // Copy packet length to buffer
+        // Convert packet length back to network byte order before storing it in the buffer.
+        uint32_t length=htonl(packet_length_); 
+        std::memcpy(packet_buffer_.data(), &length, sizeof(length));
+        
         boost::asio::async_read(
             socket_,
-            boost::asio::buffer(packet_buffer_, packet_length_),
+            boost::asio::buffer(
+                packet_buffer_.data()+Packet::PACKET_LENGTH, 
+                packet_length_),
             [self](boost::system::error_code ec, size_t)
             {
                 auto session=self->session_.lock();
@@ -67,6 +89,8 @@ namespace server {
                 {
                     session->on_packet(
                         std::move(self->packet_buffer_));
+                    
+                    self->packet_buffer_.clear();
 
                     self->read_length();
                 }

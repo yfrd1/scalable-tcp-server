@@ -20,83 +20,84 @@ Packet format:
 |                                                          |
 +----------------------------------------------------------+
 
-Notes:
-
-    1. All numeric fields must be serialized using network byte order
-       (Big Endian) to ensure compatibility between different systems.
-
-    2. packet_size does NOT include its own 4 bytes.
-       It represents the size of the remaining packet data after packet_size.
-
-       This allows the receiver to:
-           - Read the first 4 bytes.
-           - Extract packet_size.
-           - Read exactly packet_size more bytes.
-
-    3. Do not send the raw Packet struct directly.
-       Serialize and deserialize each field explicitly to avoid
-       padding, alignment, and endian issues.
-
 */
 
 
 #include <cstdint>
 #include <vector>
-#include "common/packet_type.hpp"
+#include "common/packet_enums.hpp"
 
 namespace scalable {
 namespace common {
-    
+
+struct OutgoingPacket;
+
 class Packet
 {
 public:
     explicit Packet(std::vector<uint8_t>&& bytes);
 
-    static Packet create(
-        uint8_t version,
-        PacketType packet_type,
-        uint16_t flags,
+    static OutgoingPacket create(
+        PacketVersion version,
+        PacketType type,
+        PacketFlags flags,
         uint32_t sequence_id,
         std::vector<uint8_t>&& headers,
         std::vector<uint8_t>&& payload
     );
 
     uint32_t packet_size() const;
-    uint8_t version() const;
+    PacketVersion version() const;
     PacketType packet_type() const;
     uint16_t header_size() const;
-    uint16_t flags() const;
+    PacketFlags flags() const;
     uint32_t sequence_id() const;
     uint32_t payload_size() const;
-    uint32_t buffer_size() const;
 
     const uint8_t* headers() const;
     const uint8_t* payload() const;
-    const uint8_t* buffer() const;
+    
+    static PacketType packet_type_from_byte(uint8_t type);
+    static uint8_t packet_type_to_byte(PacketType type);
+
+    static PacketVersion packet_version_from_byte(uint8_t version);
+    static uint8_t packet_version_to_byte(PacketVersion version);
+
+    static PacketFlags packet_flags_from_bytes(uint16_t flags);
+    static uint16_t packet_flags_to_bytes(PacketFlags flags);
+
+    static constexpr uint32_t PACKET_LENGTH = 4; // Use in Reader
+
+    static constexpr uint16_t MAX_HEADER_SIZE = 1024;
+    static constexpr uint32_t MAX_PAYLOAD_SIZE = 1024 * 1024;
+    static constexpr uint32_t MAX_PACKET_SIZE =
+        MAX_HEADER_SIZE + MAX_PAYLOAD_SIZE;
 
 private:
-    /*
-    void packet_size(uint32_t size);
-    void version(uint8_t version);
-    void packet_type(PacketType type);
-    void header_size(uint16_t size);
-    void flags(uint16_t flags);
-    void sequence_id(uint32_t id);
-    */
    
     uint32_t packet_size_;
-    uint8_t version_;
+    PacketVersion version_;
     PacketType packet_type_;
+    // header_size_ represents the size of the message header,
+    // not the total size of packet fields.
     uint16_t header_size_;
-    uint16_t flags_;
+    PacketFlags flags_;
     uint32_t sequence_id_;
 
-    uint16_t headers_offset_;
+    constexpr static size_t offset_packet_size_     = 0;
+    constexpr static size_t offset_version_         = 4;
+    constexpr static size_t offset_packet_type_     = 5;
+    constexpr static size_t offset_header_size_     = 6;
+    constexpr static size_t offset_flags_           = 8;
+    constexpr static size_t offset_sequence_id_     = 10;
+    constexpr static size_t offset_headers_         = 14;
+    size_t offset_payload_;  // 14 + header_size_ at run time
+
     uint16_t headers_size_;
-    uint32_t payload_offset_;
     uint32_t payload_size_;
     
     std::vector<uint8_t> buffer_;
+
 };
 
 
