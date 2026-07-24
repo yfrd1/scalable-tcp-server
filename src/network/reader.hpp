@@ -31,7 +31,6 @@ private:
     uint32_t packet_length_;
     std::vector<uint8_t> packet_buffer_;
     
-    Config& config_;
     boost::asio::steady_timer read_timer;
     boost::asio::steady_timer idle_timer;
     int read_seconds = 0;

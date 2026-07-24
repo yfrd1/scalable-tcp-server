@@ -16,12 +16,11 @@ namespace server {
         std::weak_ptr<Session> session, Config& config) :
     socket_(socket),
     session_(session),
-    config_(config),
     read_timer(socket_.get_executor()),
     idle_timer(socket_.get_executor())
     {
-        read_seconds = config_.get_int("timeouts.read_timeout_seconds", 10);
-        idle_seconds = config_.get_int("timeouts.idle_timeout_seconds", 30);
+        read_seconds = config.get_int("timeouts.read_timeout_seconds", 10);
+        idle_seconds = config.get_int("timeouts.idle_timeout_seconds", 30);
 
         read_timer.expires_at(steady_timer::time_point::max());
         idle_timer.expires_at(steady_timer::time_point::max());
