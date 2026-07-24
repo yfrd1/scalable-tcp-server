@@ -20,7 +20,7 @@ namespace server {
     idle_timer(socket_.get_executor())
     {
         read_seconds = config.get_int("timeouts.read_timeout_seconds", 10);
-        idle_seconds = config.get_int("timeouts.idle_timeout_seconds", 30);
+        idle_seconds = config.get_int("timeouts.idle_timeout_seconds", 300);
 
         read_timer.expires_at(steady_timer::time_point::max());
         idle_timer.expires_at(steady_timer::time_point::max());
