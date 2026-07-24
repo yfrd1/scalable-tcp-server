@@ -1,25 +1,41 @@
 #include <boost/asio.hpp>
+#include <chrono>
 #include "reader.hpp"
 #include "session/session.hpp"
 #include "common/packet.hpp"
+#include "config/config.hpp"
 
 using boost::asio::ip::tcp;
+using boost::asio::steady_timer;
 
 namespace scalable {
 namespace server {
 
 
     Reader::Reader(tcp::socket& socket,
-        std::weak_ptr<Session> session) :
+        std::weak_ptr<Session> session, Config& config) :
     socket_(socket),
-    session_(session)
+    session_(session),
+    config_(config),
+    read_timer(socket_.get_executor()),
+    idle_timer(socket_.get_executor())
     {
+        read_seconds = config_.get_int("timeouts.read_timeout_seconds", 10);
+        idle_seconds = config_.get_int("timeouts.idle_timeout_seconds", 30);
 
+        read_timer.expires_at(steady_timer::time_point::max());
+        idle_timer.expires_at(steady_timer::time_point::max());
+
+        check_read_deadline();
+        check_idle_deadline();
     }
 
     void Reader::read_length()
     {
         auto self = shared_from_this();
+
+        read_timer.expires_after(std::chrono::seconds(read_seconds));
+        idle_timer.expires_after(std::chrono::seconds(idle_seconds));
 
         boost::asio::async_read(socket_,
             boost::asio::buffer(&packet_length_, sizeof(packet_length_)),
@@ -63,6 +79,9 @@ namespace server {
     {
         auto self = shared_from_this();
 
+        read_timer.expires_after(std::chrono::seconds(read_seconds));
+        idle_timer.expires_after(std::chrono::seconds(idle_seconds));
+
         // Add packet length to buffer 
         packet_buffer_.resize(packet_length_ + Packet::PACKET_LENGTH);
 
@@ -105,61 +124,78 @@ namespace server {
         );
     }
 
-    /*
-    void Reader::read_length()
-    {
-        auto self { shared_from_this() };
-        deadline.expires_after(std::chrono::seconds(read_timeout));
-        idle_deadline.expires_after(std::chrono::seconds(idle_timeout));
-        
-        boost::asio::async_read(
-            socket,
-            boost::asio::buffer(&packet_length, sizeof(packet_length)),
-            [this, self](boost::system::error_code ec, size_t bytes)
+    void Reader::check_read_deadline()
+    { 
+        auto self = shared_from_this();
+        read_timer.async_wait([self](boost::system::error_code ec)
+        {
+            bool failed = false;
+
+            if(!ec)
             {
-                if(!ec)
+                if(self->read_timer.expiry() < 
+                    steady_timer::clock_type::now())
                 {
-                    read_body();
+                    failed = true;
                 }
                 else
                 {
-                    logger_->log(LogLevel::Error, "Session", ec.message());
-                    close();
-                    return;
+                    self->read_timer.expires_at(steady_timer::time_point::max());
+                    self->check_read_deadline();
                 }
             }
-        );
+            else
+            {
+                failed = true;
+            }
+
+            if(failed)
+            {
+                if(auto session = self->session_.lock())
+                {
+                    session->stop();
+                }
+                return;
+            }
+
+        });
     }
 
-    void Reader::read_body()
+    void Reader::check_idle_deadline()
     {
-        auto self { shared_from_this() };
-        deadline.expires_after(std::chrono::seconds(read_timeout));
-        idle_deadline.expires_after(std::chrono::seconds(idle_timeout));
-
-        packet_length=ntohl(packet_length);
-        packet_body.reserve(packet_length);
-
-        boost::asio::async_read(
-            socket,
-            boost::asio::buffer(packet_body, packet_length),
-            [this, self](boost::system::error_code ec, size_t bytes)
+        auto self = shared_from_this();
+        idle_timer.async_wait([self](boost::system::error_code ec)
+        {
+            bool failed = false;
+            if(!ec)
             {
-                if(!ec)
+                if(self->idle_timer.expiry() <
+                    steady_timer::clock_type::now())
                 {
-                    
+                    self->idle_timer.expires_at(
+                        steady_timer::time_point::max());
+                    self->check_idle_deadline();
                 }
                 else
                 {
-                    logger_->log(LogLevel::Error, "Session", ec.message());
-                    close();
-                    return;
+                    failed = true;
                 }
             }
-        );
+            else
+            {
+                failed = true;
+            }
 
+            if(failed)
+            {
+                if(auto session = self->session_.lock())
+                {
+                    session->stop();
+                }
+                return;
+            }
+        });
     }
-    */
 
 }
 }

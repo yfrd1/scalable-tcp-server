@@ -28,7 +28,7 @@ namespace server {
     void Session::start()
     {
         reader_=std::make_shared<Reader>(socket_,
-            weak_from_this());
+            weak_from_this(), config_);
 
         writer_=std::make_shared<Writer>(socket_, 
             weak_from_this());
