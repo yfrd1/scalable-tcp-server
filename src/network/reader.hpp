@@ -24,7 +24,6 @@ public:
 
 private:
     void check_read_deadline();
-    void check_idle_deadline();
     
     std::weak_ptr<Session> session_;
     tcp::socket& socket_;
@@ -32,9 +31,7 @@ private:
     std::vector<uint8_t> packet_buffer_;
     
     boost::asio::steady_timer read_timer;
-    boost::asio::steady_timer idle_timer;
-    int read_seconds = 0;
-    int idle_seconds = 0;
+    int read_seconds = 10;
     
 };
 

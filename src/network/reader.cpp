@@ -11,22 +11,17 @@ using boost::asio::steady_timer;
 namespace scalable {
 namespace server {
 
-
     Reader::Reader(tcp::socket& socket,
         std::weak_ptr<Session> session, Config& config) :
     socket_(socket),
     session_(session),
-    read_timer(socket_.get_executor()),
-    idle_timer(socket_.get_executor())
+    read_timer(socket_.get_executor())
     {
         read_seconds = config.get_int("timeouts.read_timeout_seconds", 10);
-        idle_seconds = config.get_int("timeouts.idle_timeout_seconds", 300);
-
+        
         read_timer.expires_at(steady_timer::time_point::max());
-        idle_timer.expires_at(steady_timer::time_point::max());
-
+        
         check_read_deadline();
-        check_idle_deadline();
     }
 
     void Reader::read_length()
@@ -34,12 +29,14 @@ namespace server {
         auto self = shared_from_this();
 
         read_timer.expires_after(std::chrono::seconds(read_seconds));
-        idle_timer.expires_after(std::chrono::seconds(idle_seconds));
-
+    
         boost::asio::async_read(socket_,
             boost::asio::buffer(&packet_length_, sizeof(packet_length_)),
             [self](boost::system::error_code ec, size_t)
             {
+                if(!self->socket_.is_open())
+                    return;
+
                 if(!ec)
                 {
                     self->packet_length_=
@@ -79,8 +76,7 @@ namespace server {
         auto self = shared_from_this();
 
         read_timer.expires_after(std::chrono::seconds(read_seconds));
-        idle_timer.expires_after(std::chrono::seconds(idle_seconds));
-
+    
         // Add packet length to buffer 
         packet_buffer_.resize(packet_length_ + Packet::PACKET_LENGTH);
 
@@ -96,6 +92,9 @@ namespace server {
                 packet_length_),
             [self](boost::system::error_code ec, size_t)
             {
+                if(!self->socket_.is_open())
+                    return;
+
                 auto session=self->session_.lock();
 
                 if(!session)
@@ -126,75 +125,26 @@ namespace server {
     void Reader::check_read_deadline()
     { 
         auto self = shared_from_this();
-        read_timer.async_wait([self](boost::system::error_code ec)
+        read_timer.async_wait(
+            [self](boost::system::error_code ec)
         {
-            bool failed = false;
-
-            if(!ec)
+            // operation_aborted means the pending async_wait was cancelled by
+            // expires_after(), expires_at(), or cancel().
+            // not because the timer expired.
+            if(ec==boost::asio::error::operation_aborted)
             {
-                if(self->read_timer.expiry() < 
-                    steady_timer::clock_type::now())
-                {
-                    failed = true;
-                }
-                else
-                {
-                    self->read_timer.expires_at(steady_timer::time_point::max());
-                    self->check_read_deadline();
-                }
-            }
-            else
-            {
-                failed = true;
-            }
-
-            if(failed)
-            {
-                if(auto session = self->session_.lock())
-                {
-                    session->stop();
-                }
+                self->check_read_deadline();
                 return;
+            }
+
+            if(auto session = self->session_.lock())
+            {
+                session->stop();
             }
 
         });
     }
 
-    void Reader::check_idle_deadline()
-    {
-        auto self = shared_from_this();
-        idle_timer.async_wait([self](boost::system::error_code ec)
-        {
-            bool failed = false;
-            if(!ec)
-            {
-                if(self->idle_timer.expiry() <
-                    steady_timer::clock_type::now())
-                {
-                    self->idle_timer.expires_at(
-                        steady_timer::time_point::max());
-                    self->check_idle_deadline();
-                }
-                else
-                {
-                    failed = true;
-                }
-            }
-            else
-            {
-                failed = true;
-            }
-
-            if(failed)
-            {
-                if(auto session = self->session_.lock())
-                {
-                    session->stop();
-                }
-                return;
-            }
-        });
-    }
-
+    
 }
 }
