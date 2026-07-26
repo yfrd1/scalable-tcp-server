@@ -20,9 +20,15 @@ namespace server {
         socket_(std::move(socket)),
         config_(config),
         logger_(logger),
-        on_close_(std::move(on_close))
+        on_close_(std::move(on_close)),
+        idle_timer_(socket_.get_executor())
     {
         
+        seconds_idle_ = config_.get_int(
+            "timeouts.idle_timeout_seconds", seconds_idle_);
+        idle_timer_.expires_at(steady_timer::time_point::max());
+
+        check_idle_timer();
     }
 
     void Session::start()
@@ -31,7 +37,7 @@ namespace server {
             weak_from_this(), config_);
 
         writer_=std::make_shared<Writer>(socket_, 
-            weak_from_this());
+            weak_from_this(), config_);
 
         read_packet();
     }
@@ -39,6 +45,7 @@ namespace server {
 
     void Session::read_packet()
     {
+        idle_timer_.expires_after(std::chrono::seconds(seconds_idle_));
         reader_->read_length();
     }
 
@@ -49,6 +56,8 @@ namespace server {
 
     void Session::write_packet(std::vector<uint8_t> packet)
     {
+        idle_timer_.expires_after(std::chrono::seconds(seconds_idle_));
+
         writer_->add_packet(std::move(packet));
     }
 
@@ -61,10 +70,27 @@ namespace server {
 
         boost::system::error_code ec;
         socket_.close(ec);
+        idle_timer_.cancel();
 
         if(on_close_)
             on_close_(shared_from_this());
     }
     
+    void Session::check_idle_timer()
+    {
+        auto self = shared_from_this();
+        idle_timer_.async_wait(
+            [self](boost::system::error_code ec)
+            {
+                if(ec==boost::asio::error::operation_aborted)
+                {
+                    self->check_idle_timer();
+                    return;
+                }
+
+                self->stop();
+            }
+        );
+    }
 }
 }

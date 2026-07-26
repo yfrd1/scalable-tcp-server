@@ -36,6 +36,8 @@ public:
     void on_packet(std::vector<uint8_t> packet);
 
 private:
+    void check_idle_timer();
+
     tcp::socket socket_;
     std::shared_ptr<Logger> logger_;
     Config& config_;
@@ -46,6 +48,8 @@ private:
     std::shared_ptr<Reader> reader_;
     std::shared_ptr<Writer> writer_;
 
+    int seconds_idle_ = 300;
+    steady_timer idle_timer_;
 };
 
 }
