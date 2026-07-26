@@ -20,7 +20,7 @@ Packet format:
 |                                                          |
 +----------------------------------------------------------+
 
-Sub Headers:
+Sub headers format:
 [SubHeaderSize 2 bytes][SubHeaderType 1 byte][Value]
 
 */
@@ -68,6 +68,7 @@ public:
     void setSubHeader(SubHeaderType type, std::span<const std::byte> value);
     uint8_t sub_header_to_byte(SubHeaderType type);
     SubHeaderType sub_header_from_byte(uint8_t byte);
+    std::span<const uint8_t> sub_header_value(SubHeaderType type) const;
 
     uint32_t packet_size() const;
     PacketVersion version() const;

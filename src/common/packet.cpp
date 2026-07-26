@@ -197,6 +197,16 @@ namespace common {
         }
     } 
 
+    std::span<const uint8_t> Packet::sub_header_value(SubHeaderType type) const
+    {
+        for(const auto& sub : headers_)
+        {
+            if(sub.type == type)
+                return sub.value;
+        }
+        return {};
+    }
+
     uint8_t sub_header_to_byte(SubHeaderType type)
     {
         switch (type)
