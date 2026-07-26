@@ -15,10 +15,12 @@ enum class PacketVersion : uint8_t
 
 enum class PacketType : uint8_t 
 {
-    Unknown = 0,
-    Text = 1,
-    File = 2,
-    Video = 3
+    Unknown =           0,
+    Auth    =           1,
+    Account =           2,
+    Text    =           3,
+    File    =           4,
+    Video   =           5
 };
 
 enum class PacketFlags : uint16_t
