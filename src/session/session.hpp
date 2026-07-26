@@ -10,6 +10,7 @@
 #include "network/reader.hpp"
 #include "network/writer.hpp"
 #include "common/packet.hpp"
+#include "router/router.hpp"
 
 
 using boost::asio::ip::tcp;
@@ -50,6 +51,8 @@ private:
 
     int seconds_idle_ = 300;
     steady_timer idle_timer_;
+
+    Router router_;
 };
 
 }

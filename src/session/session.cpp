@@ -6,6 +6,7 @@
 #include "session.hpp"
 #include "logger/logger.hpp"
 #include "config/config.hpp"
+#include "common/packet.hpp"
 
 using boost::asio::ip::tcp;
 using LogLevel = scalable::server::Logger::LogLevel;
@@ -51,7 +52,8 @@ namespace server {
 
     void Session::on_packet(std::vector<uint8_t> packet)
     {
-        //Deserialize packet bytes on a Packet object
+        Packet packetObj(std::move(packet));
+        router_.route(*this, packetObj);
     }   
 
     void Session::write_packet(std::vector<uint8_t> packet)
