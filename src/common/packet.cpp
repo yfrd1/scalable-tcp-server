@@ -67,7 +67,8 @@ namespace common {
         payload_size_ = packet_size_ - offset_payload_;
         if(payload_size_ > MAX_PAYLOAD_SIZE)
             throw std::invalid_argument("Payload size error");
-        
+            
+        parseSubHeaders();
     }
 
     OutgoingPacket Packet::create(
@@ -127,6 +128,105 @@ namespace common {
         packet.payload = std::move(payload);
         
         return packet;
+    }
+
+    // subHeader
+    void Packet::parseSubHeaders()
+    {
+
+        uint16_t count = 0;
+        
+        while(count < header_size_)
+        {
+            uint16_t sub_header_size = 0;
+            uint8_t sub_header_type = 0;
+
+            if(header_size_ - count < sizeof(sub_header_size))
+            {
+                throw std::invalid_argument("Incomplete SubHeaderSize");
+            }
+
+            std::memcpy(&sub_header_size, 
+                buffer_.data() + offset_headers_ + count ,
+                sizeof(sub_header_size));
+            
+            if(sub_header_size > MAX_HEADER_SIZE)
+            {
+                throw std::invalid_argument("Invalid sub header size");
+            }
+
+            count += sizeof(sub_header_size);
+
+            if( header_size_ - count < sizeof(sub_header_type) )
+            {
+                throw std::invalid_argument("Incomplete SubHeaderType");
+            }
+
+            std::memcpy(&sub_header_type, 
+                buffer_.data() + offset_headers_ + count ,
+                sizeof(sub_header_type));
+
+            if(sub_header_from_byte(sub_header_type) == SubHeaderType::Unknown)
+            {
+                throw std::invalid_argument("Invalid SubHeaderType");
+            }
+
+            count += sizeof(sub_header_type);
+
+            if(header_size_ - count < sub_header_size)
+            {
+                throw std::invalid_argument("Incomplete SubHeaderValue");
+            }
+
+            SubHeader sub;
+            sub.type = sub_header_from_byte(sub_header_type);
+            sub.size = sub_header_size;
+            sub.offset = offset_headers_ + count;
+            sub.value = std::span<const uint8_t>(
+                buffer_.data() + offset_headers_ + count,
+                sub_header_size);
+            headers_.push_back(std::move(sub));
+
+            count += sub_header_size;
+
+        }
+
+        if(count != header_size_)
+        {
+            throw std::invalid_argument("Invalid header size");
+        }
+    } 
+
+    uint8_t sub_header_to_byte(SubHeaderType type)
+    {
+        switch (type)
+        {
+        case SubHeaderType::SessionId:
+            return 10;
+        case SubHeaderType::UserId:
+            return 11;
+        case SubHeaderType::AuthToken:
+            return 12;
+        
+        default:
+            return 0;
+        }
+    }
+
+    SubHeaderType sub_header_from_byte(uint8_t byte)
+    {
+        switch (byte)
+        {
+        case 10:
+            return SubHeaderType::SessionId;
+        case 11:
+            return SubHeaderType::UserId;
+        case 12:
+            return SubHeaderType::AuthToken;
+        
+        default:
+            return SubHeaderType::Unknown;
+        }
     }
 
     // Getters

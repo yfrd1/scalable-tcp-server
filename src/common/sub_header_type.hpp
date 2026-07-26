@@ -10,9 +10,9 @@ namespace common {
         Unknown = 0,
         
         // Authentication / Identity
-        SessionId,
-        UserId,
-        AuthToken,
+        SessionId = 10,
+        UserId = 11,
+        AuthToken = 12,
 
         /*
         // Request / Response

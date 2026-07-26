@@ -20,12 +20,18 @@ Packet format:
 |                                                          |
 +----------------------------------------------------------+
 
+Sub Headers:
+[SubHeaderSize 2 bytes][SubHeaderType 1 byte][Value]
+
 */
 
 
 #include <cstdint>
 #include <vector>
+#include <span>
+#include <cstddef>
 #include "common/packet_enums.hpp"
+#include "common/sub_header_type.hpp"
 
 namespace scalable {
 namespace common {
@@ -35,6 +41,16 @@ struct OutgoingPacket;
 class Packet
 {
 public:
+
+    // SubHeader
+    struct SubHeader
+    {
+        uint16_t size;
+        SubHeaderType type;
+        uint16_t offset;
+        std::span<const uint8_t> value;
+    };
+
     explicit Packet(std::vector<uint8_t>&& bytes);
 
     static OutgoingPacket create(
@@ -45,6 +61,13 @@ public:
         std::vector<uint8_t>&& headers,
         std::vector<uint8_t>&& payload
     );
+
+    // SubHeader
+    void parseSubHeaders();
+    std::span<const std::byte> getSubHeader(SubHeaderType type) const;
+    void setSubHeader(SubHeaderType type, std::span<const std::byte> value);
+    uint8_t sub_header_to_byte(SubHeaderType type);
+    SubHeaderType sub_header_from_byte(uint8_t byte);
 
     uint32_t packet_size() const;
     PacketVersion version() const;
@@ -97,6 +120,9 @@ private:
     uint32_t payload_size_;
     
     std::vector<uint8_t> buffer_;
+
+    // SubHeader
+    std::vector<SubHeader> headers_;
 
 };
 
