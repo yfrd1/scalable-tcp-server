@@ -1,8 +1,9 @@
 #include "auth_handler.hpp"
 #include "common/sub_header_type.hpp"
-#include "common/auth_data_types.hpp"
+#include "common/auth/auth_validator.hpp"
 
 using scalable::common::SubHeaderType;
+using scalable::common::AuthValidator;
 
 namespace scalable {
 namespace server {
@@ -15,9 +16,10 @@ namespace server {
         {
             return;
         }
+        
+        if(!AuthValidator::validateAction(*value))
+            return;
 
-        
-        
     }
 
 }

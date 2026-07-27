@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include "auth_enums.hpp"
 
 namespace scalable {
@@ -10,7 +11,8 @@ class AuthValidator
 public:
     AuthValidator() = default;
 
-    bool validateAction(AuthAction action) const;
+    static bool validateAction(uint8_t action);
+    static AuthAction action_from_byte(uint8_t action);
 };
 
 }
