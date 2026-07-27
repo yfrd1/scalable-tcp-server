@@ -8,6 +8,7 @@ namespace common {
     enum class SubHeaderType : uint8_t
     {
         Unknown = 0,
+        Action = 1,
         
         // Authentication / Identity
         SessionId = 10,

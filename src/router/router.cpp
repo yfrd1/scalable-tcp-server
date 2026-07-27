@@ -9,11 +9,13 @@ namespace server {
 
     void Router::route(Session& session, Packet& packet)
     {
+        
         switch (packet.packet_type())
         {
         case PacketType::Auth:
-            
-        case PacketType::Account:
+            auth_handler_.handle(session, packet);
+            break;
+
         default:
             break;
         }
