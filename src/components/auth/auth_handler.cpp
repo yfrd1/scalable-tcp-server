@@ -9,11 +9,13 @@ namespace server {
 
     void AuthHandler::handle(Session& session, Packet& packet)
     {
-        const auto& value = packet.sub_header_value(SubHeaderType::Action);
-        if(value.empty())
+        auto value = packet.sub_header_get_uint8(SubHeaderType::Action);
+        if(!value)
         {
             return;
         }
+
+        
 
         
     }

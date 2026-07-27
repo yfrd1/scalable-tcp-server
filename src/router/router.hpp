@@ -1,10 +1,6 @@
 #pragma once
 
-#include "handlers/auth_handler.hpp"
-#include "handlers/account_handler.hpp"
-#include "handlers/chat_handler.hpp"
-#include "handlers/file_handler.hpp"
-#include "handlers/stream_handler.hpp"
+#include "components/auth/auth_handler.hpp"
 
 #include "common/packet_enums.hpp"
 #include "session/session.hpp"
@@ -29,7 +25,7 @@ public:
 
 private:
     AuthHandler auth_handler_;
-    AccountHandler account_handler;
+    //AccountHandler account_handler;
     //ChatHandler chat_handler_;
     //FileHandler file_handler_;
     //StreamHandler stream_handler_;
