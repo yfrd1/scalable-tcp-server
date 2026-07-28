@@ -25,6 +25,8 @@
 ## Localization layer for server
 - [ ] Add localization layer for server responses, errors, and messages
 
+## Database password
+- [ ] Prompt for the database password at runtime instead of storing it in the config file.
 
 ## Avoid extra Payload copy
 - [ ] Avoid creating a std::string copy of the payload during deserialization. Use a custom std::streambuf that reads directly from payload() without copying.
