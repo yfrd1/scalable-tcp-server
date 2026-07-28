@@ -9,11 +9,6 @@ namespace server {
 class AuthHandler
 {
 public:
-    enum class AuthAction : uint8_t
-    {
-        Login = 1,
-        Register = 2
-    };
 
     AuthHandler() = default;
 
