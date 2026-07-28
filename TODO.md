@@ -26,3 +26,5 @@
 - [ ] Add localization layer for server responses, errors, and messages
 
 
+## Avoid extra Payload copy
+- [ ] Avoid creating a std::string copy of the payload during deserialization. Use a custom std::streambuf that reads directly from payload() without copying.
