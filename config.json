@@ -31,6 +31,15 @@
         "idle_timeout_seconds": 300
     },
 
+    "database":
+    {
+        "host": "localhost",
+        "port": 3306,
+        "username": "asio",
+        "password": "asio",
+        "database": "server_db"
+    },
+
     "logging":
     {
         "level": "Info",
