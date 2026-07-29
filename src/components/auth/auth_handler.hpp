@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/mysql.hpp>
+#include <boost/asio.hpp>
 
 namespace scalable::common{ class Packet; }
 namespace mysql = boost::mysql;

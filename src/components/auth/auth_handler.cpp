@@ -1,10 +1,12 @@
 
 #include <boost/mysql.hpp>
+#include <boost/asio.hpp>
 #include "components/auth/auth_handler.hpp"
 #include "components/auth/auth_service.hpp"
 #include "common/sub_header_type.hpp"
 #include "common/packet.hpp"
 #include "common/auth/auth_validator.hpp"
+#include "session/session.hpp"
 
 namespace mysql = boost::mysql; 
 using scalable::common::SubHeaderType;
@@ -35,9 +37,16 @@ namespace server {
         {
             LoginRequest request =
                 common::deserialize_login_request(packet.payload(), packet.payload_size());
-
-            AuthService servise;
-            servise.login(session, request);
+/*
+            AuthService service;
+            auto self = session.shared_from_this();
+            boost::asio::co_spawn(
+                session.get_executor(),
+                service.login(
+                    self, request, connection_pool
+                ),
+                boost::asio::detached);
+*/
         }
 
     }

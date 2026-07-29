@@ -38,6 +38,8 @@ public:
     void stop();
     void on_packet(std::vector<uint8_t> packet);
 
+    boost::asio::any_io_executor get_executor();
+    
 private:
     void check_idle_timer();
 

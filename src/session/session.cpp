@@ -98,5 +98,11 @@ namespace server {
             }
         );
     }
+
+    boost::asio::any_io_executor Session::get_executor()
+    {
+        return socket_.get_executor();
+    }
+
 }
 }
