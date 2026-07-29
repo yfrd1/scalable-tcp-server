@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/mysql.hpp>
+
 #include "components/auth/auth_handler.hpp"
 
 #include "common/packet_enums.hpp"
@@ -21,7 +23,7 @@ public:
     Router(Router&&) = delete;
     Router& operator = (Router&&) = delete;
 
-    void route(Session& session, Packet& packet);
+    void route(Session& session, Packet& packet, mysql::connection_pool& pool);
 
 private:
     AuthHandler auth_handler_;

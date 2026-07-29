@@ -22,9 +22,11 @@ public:
 
     void run();
     void stop();
-    void do_await_stop();;
+    void do_await_stop();
 
 private:
+    mysql::pool_params makeParams(const Config& config);
+
     boost::asio::io_context io_context_;
     boost::asio::executor_work_guard
         <boost::asio::io_context::executor_type> work_guard_;
@@ -33,6 +35,9 @@ private:
     Config config_;
     std::shared_ptr<Logger> logger_;
     
+    mysql::pool_params params_;
+    mysql::connection_pool connection_pool_;   
+
     ThreadPool thread_pool_;
     BufferPool buffer_pool_;
     //mysql::connection_pool connection_pool_;

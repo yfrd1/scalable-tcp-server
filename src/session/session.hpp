@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/asio.hpp>
+#include <boost/mysql.hpp>
 #include <memory>
 #include <vector>
 #include <cstdint>
@@ -12,7 +13,7 @@
 #include "common/packet.hpp"
 #include "router/router.hpp"
 
-
+namespace mysql = boost::mysql;
 using boost::asio::ip::tcp;
 using boost::asio::steady_timer;
 using scalable::common::Packet;
@@ -27,6 +28,7 @@ public:
         tcp::socket socket, 
         Config& config, 
         std::shared_ptr<Logger> logger,
+        mysql::connection_pool& pool,
         std::function<void(std::shared_ptr<Session>)> on_close);
 
     void start();
@@ -42,6 +44,7 @@ private:
     tcp::socket socket_;
     std::shared_ptr<Logger> logger_;
     Config& config_;
+    mysql::connection_pool& connection_pool_;
     std::function<void(std::shared_ptr<Session>)> 
         on_close_;
     bool stopped_=false;
