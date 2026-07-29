@@ -1,7 +1,7 @@
 #include <boost/asio.hpp>
 #include <memory>
 #include <cstdint>
-#include "writer.hpp"
+#include "network/writer.hpp"
 #include "session/session.hpp"
 #include "config/config.hpp"
 

@@ -13,7 +13,7 @@ namespace scalable {
 namespace server {
 
 class Session;
-class Writer;
+class Config;
 
 class Writer : public std::enable_shared_from_this<Writer>
 {

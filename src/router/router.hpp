@@ -2,15 +2,20 @@
 
 #include <boost/mysql.hpp>
 
-#include "components/auth/auth_handler.hpp"
+//#include "components/auth/auth_handler.hpp"
 
 #include "common/packet_enums.hpp"
-#include "session/session.hpp"
+#include "common/packet.hpp"
+
+namespace mysql = boost::mysql;
 
 using scalable::common::PacketType;
+using scalable::common::Packet;
 
 namespace scalable {
 namespace server {
+
+class Session;
 
 class Router
 {
@@ -26,7 +31,7 @@ public:
     void route(Session& session, Packet& packet, mysql::connection_pool& pool);
 
 private:
-    AuthHandler auth_handler_;
+    //AuthHandler auth_handler_;
     //AccountHandler account_handler;
     //ChatHandler chat_handler_;
     //FileHandler file_handler_;

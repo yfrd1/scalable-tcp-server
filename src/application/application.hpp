@@ -40,8 +40,7 @@ private:
 
     ThreadPool thread_pool_;
     BufferPool buffer_pool_;
-    //mysql::connection_pool connection_pool_;
-
+    
     // Router is shared across all sessions because routing depends only
     // on packet type and does not store any session-specific state.
     Router router_;

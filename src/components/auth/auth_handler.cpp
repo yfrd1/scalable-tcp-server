@@ -1,5 +1,4 @@
-#include "auth_handler.hpp"
-#include "auth_types.hpp"
+#include "components/auth/auth_handler.hpp"
 #include "common/sub_header_type.hpp"
 #include "common/auth/auth_validator.hpp"
 

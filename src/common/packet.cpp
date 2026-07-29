@@ -254,7 +254,7 @@ namespace common {
     }
 
 
-    uint8_t sub_header_to_byte(SubHeaderType type)
+    uint8_t Packet::sub_header_to_byte(SubHeaderType type)
     {
         switch (type)
         {
@@ -270,7 +270,7 @@ namespace common {
         }
     }
 
-    SubHeaderType sub_header_from_byte(uint8_t byte)
+    SubHeaderType Packet::sub_header_from_byte(uint8_t byte)
     {
         switch (byte)
         {
