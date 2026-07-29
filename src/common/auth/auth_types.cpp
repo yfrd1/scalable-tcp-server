@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cstdint>
 #include <string>
 #include <sstream>
@@ -10,9 +8,7 @@
 namespace scalable {
 namespace common {
  
-    namespace deserialize
-    {
-        LoginRequest login_request(
+        LoginRequest deserialize_login_request(
             const uint8_t* body, uint32_t size)
         {
             // TODO: Optimize this later to avoid unnecessary data copies.
@@ -25,6 +21,6 @@ namespace common {
 
             return request;
         }
-    }
+    
 }
 }

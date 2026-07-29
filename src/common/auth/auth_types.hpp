@@ -31,11 +31,9 @@ namespace common {
         }
     };
 
-    namespace deserialize
-    {
-        LoginRequest login_request(
-            const uint8_t* body, uint32_t size);
+    LoginRequest deserialize_login_request(
+        const uint8_t* body, uint32_t size);
 
-    }
+    
 }
 }

@@ -1,12 +1,13 @@
 #include "components/auth/auth_handler.hpp"
 #include "common/sub_header_type.hpp"
+#include "common/packet.hpp"
 #include "common/auth/auth_validator.hpp"
 
 using scalable::common::SubHeaderType;
 using scalable::common::AuthValidator;
 using scalable::common::AuthAction;
 using scalable::common::LoginRequest;
-namespace deserialize = scalable::common::deserialize;
+using scalable::common::Packet;
 
 
 namespace scalable {
@@ -28,7 +29,7 @@ namespace server {
         if(actionType == AuthAction::Login)
         {
             LoginRequest request =
-                deserialize::login_request(packet.payload(), packet.payload_size());
+                common::deserialize_login_request(packet.payload(), packet.payload_size());
         }
 
     }

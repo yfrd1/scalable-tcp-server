@@ -1,10 +1,12 @@
 #pragma once
 
-#include "session/session.hpp"
-#include "common/packet.hpp"
+namespace scalable::common{ class Packet; }
+using scalable::common::Packet;
 
 namespace scalable {
 namespace server {
+
+class Session;
 
 class AuthHandler
 {

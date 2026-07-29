@@ -32,6 +32,7 @@ Sub headers format:
 #include <cstdint>
 #include <vector>
 #include <span>
+#include <string>
 #include <cstddef>
 #include <optional>
 #include "common/packet_enums.hpp"
