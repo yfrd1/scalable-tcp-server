@@ -1,8 +1,12 @@
+
+#include <boost/mysql.hpp>
 #include "components/auth/auth_handler.hpp"
+#include "components/auth/auth_service.hpp"
 #include "common/sub_header_type.hpp"
 #include "common/packet.hpp"
 #include "common/auth/auth_validator.hpp"
 
+namespace mysql = boost::mysql; 
 using scalable::common::SubHeaderType;
 using scalable::common::AuthValidator;
 using scalable::common::AuthAction;
@@ -14,7 +18,8 @@ namespace scalable {
 namespace server {
 
 
-    void AuthHandler::handle(Session& session, Packet& packet)
+    void AuthHandler::handle(Session& session, Packet& packet,
+        mysql::connection_pool& connection_pool)
     {
         auto value = packet.sub_header_get_uint8(SubHeaderType::Action);
         if(!value)
@@ -30,6 +35,9 @@ namespace server {
         {
             LoginRequest request =
                 common::deserialize_login_request(packet.payload(), packet.payload_size());
+
+            AuthService servise;
+            servise.login(session, request);
         }
 
     }

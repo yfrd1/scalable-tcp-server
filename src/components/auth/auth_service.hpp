@@ -1,20 +1,23 @@
 #pragma once
 
-#include "session/session.hpp"
-#include "common/packet.hpp"
+#include "common/auth/auth_types.hpp"
+using scalable::common::LoginRequest;
 
 namespace scalable {
 namespace server {
 
-    class AuthService
-    {
-    public:
-        AuthService() = default;
+class Session;
 
-        void loginService(Session& session, Packet& packet);
-        void registerService(Session& session, Packet& packet);
-        
+class AuthService
+{
+public:
+    AuthService() = default;
 
-    };
+    void login(Session& session, LoginRequest& request);
+    
+
+};
+
+
 }
 }

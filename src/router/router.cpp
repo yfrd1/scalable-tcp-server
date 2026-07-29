@@ -14,7 +14,7 @@ namespace server {
     void Router::route(Session& session, Packet& packet,
         mysql::connection_pool& connection_pool)
     {
-        /*
+        
         switch (packet.packet_type())
         {
         case PacketType::Auth:
@@ -24,7 +24,7 @@ namespace server {
         default:
             break;
         }
-        */
+        
     }
   
 
