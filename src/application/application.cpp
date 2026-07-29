@@ -37,6 +37,8 @@ namespace server {
         if(!logger_->getFileFolders())
             throw std::invalid_argument("There is an error in path, name or extension of log file");
 
+        connection_pool_.async_run(boost::asio::detached);
+        
         server_=std::make_unique<Server>(
             io_context_, config_, logger_, connection_pool_);
 
