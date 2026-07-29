@@ -17,11 +17,13 @@ target_include_directories(server PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
 
-find_package(Boost REQUIRED COMPONENTS json)
+find_package(Boost REQUIRED COMPONENTS json charconv serialization)
 find_package(OpenSSL REQUIRED)
 
 target_link_libraries(server PRIVATE
     Boost::json
+    Boost::charconv
+    Boost::serialization
     OpenSSL::SSL
     OpenSSL::Crypto
     pthread
