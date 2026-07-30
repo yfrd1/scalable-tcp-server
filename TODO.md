@@ -30,3 +30,9 @@
 
 ## Avoid extra Payload copy
 - [ ] Avoid creating a std::string copy of the payload during deserialization. Use a custom std::streambuf that reads directly from payload() without copying.
+
+## Using Argon2id
+- [ ] Hash the user's password with Argon2id before storing or verifying it.
+
+## Generate session ID
+- [ ] Generate a cryptographically secure session ID, store it in the sessions table, and return it to the client.
