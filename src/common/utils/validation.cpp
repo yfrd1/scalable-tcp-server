@@ -5,16 +5,16 @@
 namespace scalable {
 namespace common {
 
-    bool Validation::isValidUsername(std::string_view username)
+    bool Validation::isValidUserId(std::string_view user_id)
     {
         std::regex pattern(R"(^[a-zA-Z0-9_\.-]+$)");
-        return std::regex_match(username.begin(), username.end(),
+        return std::regex_match(user_id.begin(), user_id.end(),
             pattern);
     }
 
-    bool Validation::isValidUsernameLength(std::string_view username)
+    bool Validation::isValidUserIdLength(std::string_view user_id)
     {
-        return username.length() < 4;
+        return user_id.length() < 4;
     }   
 
     bool Validation::isValidEmail(std::string_view email)

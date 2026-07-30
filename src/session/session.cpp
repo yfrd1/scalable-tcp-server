@@ -104,5 +104,24 @@ namespace server {
         return socket_.get_executor();
     }
 
+    tcp::endpoint Session::get_remote_endpoint()
+    {
+        boost::system::error_code ec;
+        return socket_.remote_endpoint(ec);
+    }
+
+
+    std::string Session::get_remote_address()
+    {
+        auto ep = get_remote_endpoint();
+        return ep.address().to_string();
+    }
+
+    unsigned short Session::get_remote_port()
+    {
+        auto ep = get_remote_endpoint();
+        return ep.port();
+    }
+
 }
 }

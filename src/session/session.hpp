@@ -38,6 +38,10 @@ public:
     void stop();
     void on_packet(std::vector<uint8_t> packet);
 
+    tcp::endpoint get_remote_endpoint();
+    std::string get_remote_address();
+    unsigned short get_remote_port();
+
     boost::asio::any_io_executor get_executor();
     
 private:

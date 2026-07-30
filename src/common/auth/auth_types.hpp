@@ -20,13 +20,13 @@ namespace common {
 
     struct LoginRequest
     {
-        std::string username;
+        std::string user_id;
         std::string password;
 
         template<typename Archive>
         void serialize(Archive& ar, const unsigned int)
         {
-            ar & username;
+            ar & user_id;
             ar & password;
         }
     };
