@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <string_view>
-#include <array>
+#include <string>
+#include <map>
 
 namespace scalable {
 namespace common {
@@ -12,8 +12,8 @@ namespace common {
         en = 1
     };
 
-    inline std::array<Language, 1> languages {
-        Language::en
+    inline std::map<Language, std::string> languages {
+        {Language::en, "en"}
     };
 
 }

@@ -23,7 +23,7 @@ namespace server {
 
         if(Validation::isValidUserId(request.user_id))
         {
-            
+
         }
         else if(Validation::isValidUserIdLength(request.user_id))
         {
