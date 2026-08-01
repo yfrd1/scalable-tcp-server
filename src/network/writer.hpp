@@ -1,10 +1,11 @@
 #pragma once
 
-#include <boost/asio.hpp>
 #include <memory>
 #include <vector>
 #include <cstdint>
 #include <deque>
+
+#include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
 using boost::asio::steady_timer;

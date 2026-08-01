@@ -1,6 +1,7 @@
+#include "auth_validator.hpp"
 
 #include <cstdint>
-#include "auth_validator.hpp"
+
 #include "auth_types.hpp"
 
 namespace scalable {

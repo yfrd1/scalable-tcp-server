@@ -1,3 +1,5 @@
+#include "common/packet.hpp"
+
 #include <utility>
 #include <vector>
 #include <array>
@@ -5,8 +7,8 @@
 #include <stdexcept>
 #include <optional>
 #include <arpa/inet.h>
+
 #include <boost/asio.hpp>
-#include "packet.hpp"
 
 namespace scalable {
 namespace common {

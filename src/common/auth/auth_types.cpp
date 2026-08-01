@@ -1,9 +1,11 @@
+#include "common/auth/auth_types.hpp"
+
 #include <cstdint>
 #include <string>
 #include <sstream>
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/archive/binary_iarchive.hpp>
-#include "common/auth/auth_types.hpp"
 
 namespace scalable {
 namespace common {

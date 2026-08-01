@@ -1,5 +1,6 @@
-#ifndef SCALABLE_SERVER_LOG_HPP
-#define SCALABLE_SERVER_LOG_HPP
+#pragma once
+
+#include "config/config.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -7,7 +8,6 @@
 #include <ctime>
 #include <sstream>
 #include <vector>
-#include "config/config.hpp"
 
 namespace scalable {
 namespace server {
@@ -60,5 +60,3 @@ private:
 
 }
 }
-
-#endif

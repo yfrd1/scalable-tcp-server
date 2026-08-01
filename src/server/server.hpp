@@ -1,13 +1,14 @@
-#ifndef  SCALABLE_SERVER_SERVER_HPP
-#define  SCALABLE_SERVER_SERVER_HPP
+#pragma once
 
-#include <boost/asio.hpp>
-#include <boost/mysql.hpp>
 #include <string>
 #include <atomic>
 #include <set>
 #include <memory>
 #include <mutex>
+
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
 #include "config/config.hpp"
 #include "logger/logger.hpp"
 #include "session/session.hpp"
@@ -51,4 +52,3 @@ std::mutex session_mutex_;
 
 }
 }
-#endif

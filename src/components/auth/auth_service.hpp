@@ -2,7 +2,9 @@
 
 #include <boost/mysql.hpp>
 #include <boost/asio/awaitable.hpp>
+
 #include "common/auth/auth_types.hpp"
+
 using scalable::common::LoginRequest;
 
 namespace mysql = boost::mysql;

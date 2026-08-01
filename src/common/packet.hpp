@@ -35,6 +35,7 @@ Sub headers format:
 #include <string>
 #include <cstddef>
 #include <optional>
+
 #include "common/packet_enums.hpp"
 #include "common/sub_header_type.hpp"
 

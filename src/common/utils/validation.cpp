@@ -1,6 +1,7 @@
+#include "common/utils/validation.hpp"
+
 #include <string_view>
 #include <regex>
-#include "validation.hpp"
 
 namespace scalable {
 namespace common {

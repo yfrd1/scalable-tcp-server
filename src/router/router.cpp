@@ -1,5 +1,7 @@
-#include <boost/mysql.hpp>
 #include "router/router.hpp"
+
+#include <boost/mysql.hpp>
+
 #include "common/packet_enums.hpp"
 #include "common/packet.hpp"
 #include "session/session.hpp"

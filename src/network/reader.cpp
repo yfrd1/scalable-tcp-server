@@ -1,6 +1,9 @@
-#include <boost/asio.hpp>
+#include "network/reader.hpp"
+
 #include <chrono>
-#include "reader.hpp"
+
+#include <boost/asio.hpp>
+
 #include "session/session.hpp"
 #include "common/packet.hpp"
 #include "config/config.hpp"

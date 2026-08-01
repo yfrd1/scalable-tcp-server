@@ -1,5 +1,7 @@
-#include <boost/mysql.hpp>
 #include "application/application.hpp"
+
+#include <boost/mysql.hpp>
+
 #include "logger/logger.hpp"
 
 namespace mysql = boost::mysql;

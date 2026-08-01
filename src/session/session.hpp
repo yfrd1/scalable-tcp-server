@@ -1,11 +1,13 @@
 #pragma once
 
-#include <boost/asio.hpp>
-#include <boost/mysql.hpp>
 #include <memory>
 #include <vector>
 #include <cstdint>
 #include <functional>
+
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
 #include "logger/logger.hpp"
 #include "config/config.hpp"
 #include "network/reader.hpp"

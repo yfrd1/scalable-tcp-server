@@ -1,7 +1,8 @@
+#include "components/auth/auth_service.hpp"
 
 #include <memory>
 #include <boost/mysql.hpp>
-#include "components/auth/auth_service.hpp"
+
 #include "session/session.hpp"
 #include "common/packet.hpp"
 #include "common/utils/validation.hpp"
@@ -59,6 +60,7 @@ namespace server {
 
                 auto ip = session->get_remote_address();
 
+                //Generate the session ID using a cryptographically secure random generator
                 co_await conn->async_execute(
                     smtm_insert.bind(
                         "session_id", request.user_id, ip),

@@ -1,7 +1,8 @@
+#include "components/auth/auth_handler.hpp"
 
 #include <boost/mysql.hpp>
 #include <boost/asio.hpp>
-#include "components/auth/auth_handler.hpp"
+
 #include "components/auth/auth_service.hpp"
 #include "common/sub_header_type.hpp"
 #include "common/packet.hpp"

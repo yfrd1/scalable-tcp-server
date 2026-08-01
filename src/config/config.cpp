@@ -1,8 +1,10 @@
+#include "config/config.hpp"
+
 #include <iostream>
 #include <string>
 #include <fstream>
+
 #include <boost/json.hpp>
-#include "config.hpp"
 
 namespace json = boost::json;
         

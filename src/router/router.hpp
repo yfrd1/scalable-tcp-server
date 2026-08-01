@@ -3,7 +3,6 @@
 #include <boost/mysql.hpp>
 
 #include "components/auth/auth_handler.hpp"
-
 #include "common/packet_enums.hpp"
 #include "common/packet.hpp"
 

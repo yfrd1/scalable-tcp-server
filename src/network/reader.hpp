@@ -1,9 +1,11 @@
 #pragma once
 
-#include <boost/asio.hpp>
 #include <memory>
 #include <cstdint>
 #include <vector>
+
+#include <boost/asio.hpp>
+
 #include "config/config.hpp"
 
 using boost::asio::ip::tcp;

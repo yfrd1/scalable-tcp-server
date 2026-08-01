@@ -1,10 +1,12 @@
+#include "logger/logger.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <ctime>
 #include <sstream>
 #include <filesystem>
-#include "logger.hpp"
+
 #include "config/config.hpp"
 
 namespace scalable {

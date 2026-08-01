@@ -1,8 +1,10 @@
 #pragma once
 
 #include <memory>
+
 #include <boost/asio.hpp>
 #include <boost/mysql.hpp>
+
 #include "config/config.hpp"
 #include "logger/logger.hpp"
 #include "server/server.hpp"

@@ -1,10 +1,13 @@
-#include <boost/asio.hpp>
-#include <boost/mysql.hpp>
+#include "session/session.hpp"
+
 #include <memory>
 #include <array>
 #include <cstdint>
 #include <utility>
-#include "session.hpp"
+
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
 #include "logger/logger.hpp"
 #include "config/config.hpp"
 #include "common/packet.hpp"

@@ -1,11 +1,14 @@
-#include <boost/asio.hpp>
-#include <boost/mysql.hpp>
+#include "server/server.hpp"
+
 #include <string>
 #include <vector>
 #include <thread>
 #include <memory>
 #include <mutex>
-#include "server.hpp"
+
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
 #include "logger/logger.hpp"
 #include "config/config.hpp"
 #include "session/session.hpp"

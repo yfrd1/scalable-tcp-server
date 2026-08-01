@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+
 #include "auth_types.hpp"
 
 namespace scalable {
