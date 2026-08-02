@@ -5,7 +5,7 @@
 
 #include "common/auth/auth_types.hpp"
 
-using scalable::common::LoginRequest;
+using scalable::common::auth::LoginRequest;
 
 namespace mysql = boost::mysql;
 

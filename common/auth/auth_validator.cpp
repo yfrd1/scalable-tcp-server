@@ -1,11 +1,12 @@
-#include "auth_validator.hpp"
+#include "common/auth/auth_validator.hpp"
 
 #include <cstdint>
 
-#include "auth_types.hpp"
+#include "common/auth/auth_types.hpp"
 
-namespace scalable {
-namespace common {
+using scalable::common::auth::AuthAction;
+
+namespace scalable::common::auth {
 
     bool AuthValidator::validateAction(uint8_t action)
     {
@@ -26,5 +27,4 @@ namespace common {
         }
     }
 
-}
 }

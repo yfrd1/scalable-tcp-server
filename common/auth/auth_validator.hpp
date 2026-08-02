@@ -4,8 +4,7 @@
 
 #include "auth_types.hpp"
 
-namespace scalable {
-namespace common {
+namespace scalable::common::auth {
 
 class AuthValidator
 {
@@ -16,5 +15,4 @@ public:
     static AuthAction action_from_byte(uint8_t action);
 };
 
-}
 }

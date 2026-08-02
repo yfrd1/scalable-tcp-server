@@ -11,7 +11,7 @@
 
 namespace mysql = boost::mysql;
 
-using scalable::common::LoginRequest;
+using scalable::common::auth::LoginRequest;
 using scalable::common::Validation;
 
 namespace scalable {
@@ -22,6 +22,15 @@ namespace server {
       std::shared_ptr<Session> session, LoginRequest request,
       mysql::connection_pool& connection_pool)
     {
+        //add packet_size
+        //add PacketVersion
+        //add PacketType
+        //add header_size
+        //add PacketFlags
+        //add sequence_id
+
+        //add Action to headers
+        
         if(Validation::isValidUserId(request.user_id))
         {
 

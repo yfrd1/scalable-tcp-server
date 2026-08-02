@@ -7,8 +7,7 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
-namespace scalable {
-namespace common {
+namespace scalable::common::auth {
  
         LoginRequest deserialize_login_request(
             const uint8_t* body, uint32_t size)
@@ -24,5 +23,4 @@ namespace common {
             return request;
         }
     
-}
 }

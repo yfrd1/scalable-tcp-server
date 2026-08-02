@@ -10,8 +10,7 @@
 #include "common/locales/language.hpp"
 #include "common/locales/error_codes.hpp"
 
-namespace scalable {
-namespace common {
+namespace scalable::common::locales {
 
 
 class LanguageProvider
@@ -34,5 +33,4 @@ private:
 };
 
 
-}
 }

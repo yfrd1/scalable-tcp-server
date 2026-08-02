@@ -8,7 +8,7 @@
 namespace asio = boost::asio;
 namespace mysql = boost::mysql;
 
-using scalable::common::LoginRequest;
+using scalable::common::auth::LoginRequest;
 
 namespace scalable {
 namespace server {

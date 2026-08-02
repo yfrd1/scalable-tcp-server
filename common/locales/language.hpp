@@ -4,8 +4,7 @@
 #include <string>
 #include <map>
 
-namespace scalable {
-namespace common {
+namespace scalable::common::locales {
 
     enum class Language : uint8_t
     {
@@ -16,5 +15,4 @@ namespace common {
         {Language::en, "en"}
     };
 
-}
 }

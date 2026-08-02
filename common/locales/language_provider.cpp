@@ -16,8 +16,7 @@
 
 namespace json = boost::json;
 
-namespace scalable {
-namespace common {
+namespace scalable::common::locales {
 
 
     void LanguageProvider::load_language_files()
@@ -39,7 +38,7 @@ namespace common {
 
     void LanguageProvider::load_file_content(const std::string& lang)
     {
-        std::filesystem::path path("../resource/lang/"+lang);
+        std::filesystem::path path("resource/lang/"+lang);
         if(!std::filesystem::exists(path))
             return;
         
@@ -137,5 +136,4 @@ namespace common {
         error_messages_[lang_enum] = std::move(map);
     }
 
-}
 }

@@ -2,10 +2,9 @@
 
 #include <cstdint>
 
-namespace scalable {
-namespace common {
+namespace scalable::common::auth {
 
-enum class ErrorCodes : uint16_t
+enum class ErrorCode : uint16_t
 {
     Success                     = 1,
 
@@ -18,5 +17,4 @@ enum class ErrorCodes : uint16_t
 
 };
 
-}
 }
