@@ -38,7 +38,7 @@ namespace server {
         {
             LoginRequest request =
                 common::deserialize_login_request(packet.payload(), packet.payload_size());
-/*
+
             AuthService service;
             auto self = session.shared_from_this();
             boost::asio::co_spawn(
@@ -47,7 +47,7 @@ namespace server {
                     self, request, connection_pool
                 ),
                 boost::asio::detached);
-*/
+
         }
 
     }
