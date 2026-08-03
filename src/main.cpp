@@ -1,7 +1,9 @@
-#include <boost/asio.hpp>
 #include <string>
 #include <iostream>
 #include <memory>
+
+#include <boost/asio.hpp>
+
 #include "application/application.hpp"
 
 using scalable::server::Application;

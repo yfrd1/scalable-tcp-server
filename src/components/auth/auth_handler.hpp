@@ -1,19 +1,20 @@
 #pragma once
 
-#include "session/session.hpp"
-#include "common/packet.hpp"
+#include <boost/mysql.hpp>
+#include <boost/asio.hpp>
+
+namespace scalable::common{ class Packet; }
+namespace mysql = boost::mysql;
+using scalable::common::Packet;
 
 namespace scalable {
 namespace server {
 
+class Session;
+
 class AuthHandler
 {
 public:
-    enum class AuthAction : uint8_t
-    {
-        Login = 1,
-        Register = 2
-    };
 
     AuthHandler() = default;
 
@@ -23,7 +24,8 @@ public:
     AuthHandler(AuthHandler&&) = delete;
     AuthHandler& operator=(AuthHandler&&) = delete;
 
-    void handle(Session& session, Packet& packet);    
+    void handle(Session& session, Packet& packet, 
+        mysql::connection_pool& connection_pool);    
  
 private:
 

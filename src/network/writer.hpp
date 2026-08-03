@@ -1,10 +1,11 @@
 #pragma once
 
-#include <boost/asio.hpp>
 #include <memory>
 #include <vector>
 #include <cstdint>
 #include <deque>
+
+#include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
 using boost::asio::steady_timer;
@@ -13,7 +14,7 @@ namespace scalable {
 namespace server {
 
 class Session;
-class Writer;
+class Config;
 
 class Writer : public std::enable_shared_from_this<Writer>
 {

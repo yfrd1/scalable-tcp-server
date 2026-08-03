@@ -1,14 +1,19 @@
-#include <boost/asio.hpp>
+#include "server/server.hpp"
+
 #include <string>
 #include <vector>
 #include <thread>
 #include <memory>
 #include <mutex>
-#include "server.hpp"
+
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
 #include "logger/logger.hpp"
 #include "config/config.hpp"
 #include "session/session.hpp"
 
+namespace mysql = boost::mysql;
 using boost::asio::ip::tcp;
 using LogLevel = scalable::server::Logger::LogLevel;
 
@@ -17,11 +22,13 @@ namespace server {
 
     Server::Server(boost::asio::io_context& io, 
         Config& cnf, 
-        std::shared_ptr<Logger> log) :
+        std::shared_ptr<Logger> log,
+        mysql::connection_pool& pool) :
         io_context_(io),
         acceptor(io),
         config_(cnf),
-        logger_(log)
+        logger_(log),
+        connection_pool_(pool)
     {
         logger_->log(LogLevel::Info, "Server", "initializing server");
 
@@ -90,7 +97,7 @@ namespace server {
 
                         std::shared_ptr<Session> session=
                             std::make_shared<Session>(
-                                std::move(sock), config_, logger_,
+                                std::move(sock), config_, logger_, connection_pool_,
                                 [this](std::shared_ptr<Session> session_ptr){
                                     remove_session(session_ptr);
                                 }

@@ -1,18 +1,20 @@
 #pragma once
 
-#include "handlers/auth_handler.hpp"
-#include "handlers/account_handler.hpp"
-#include "handlers/chat_handler.hpp"
-#include "handlers/file_handler.hpp"
-#include "handlers/stream_handler.hpp"
+#include <boost/mysql.hpp>
 
+#include "components/auth/auth_handler.hpp"
 #include "common/packet_enums.hpp"
-#include "session/session.hpp"
+#include "common/packet.hpp"
+
+namespace mysql = boost::mysql;
 
 using scalable::common::PacketType;
+using scalable::common::Packet;
 
 namespace scalable {
 namespace server {
+
+class Session;
 
 class Router
 {
@@ -25,11 +27,11 @@ public:
     Router(Router&&) = delete;
     Router& operator = (Router&&) = delete;
 
-    void route(Session& session, Packet& packet);
+    void route(Session& session, Packet& packet, mysql::connection_pool& pool);
 
 private:
     AuthHandler auth_handler_;
-    AccountHandler account_handler;
+    //AccountHandler account_handler;
     //ChatHandler chat_handler_;
     //FileHandler file_handler_;
     //StreamHandler stream_handler_;

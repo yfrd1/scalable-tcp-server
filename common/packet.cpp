@@ -1,11 +1,14 @@
+#include "common/packet.hpp"
+
 #include <utility>
 #include <vector>
 #include <array>
 #include <cstring>
 #include <stdexcept>
+#include <optional>
 #include <arpa/inet.h>
+
 #include <boost/asio.hpp>
-#include "packet.hpp"
 
 namespace scalable {
 namespace common {
@@ -181,7 +184,7 @@ namespace common {
             SubHeader sub;
             sub.type = sub_header_from_byte(sub_header_type);
             sub.size = sub_header_size;
-            sub.offset = offset_headers_ + count;
+            //sub.offset = offset_headers_ + count;
             sub.value = std::span<const uint8_t>(
                 buffer_.data() + offset_headers_ + count,
                 sub_header_size);
@@ -197,17 +200,63 @@ namespace common {
         }
     } 
 
-    std::span<const uint8_t> Packet::sub_header_value(SubHeaderType type) const
+    std::optional<uint8_t> Packet::sub_header_get_uint8(SubHeaderType type) const
     {
-        for(const auto& sub : headers_)
+        
+        uint8_t value = 0;
+        for(const auto& sub: headers_)
         {
-            if(sub.type == type)
-                return sub.value;
+            if(sub.type==type)
+            {
+                if(sub.value.size() != sizeof(uint8_t))
+                    return std::nullopt;
+
+                std::memcpy(&value, sub.value.data(), sizeof(value));
+                return std::optional<uint8_t>(value);
+            }
         }
-        return {};
+
+        return std::nullopt;
     }
 
-    uint8_t sub_header_to_byte(SubHeaderType type)
+    std::optional<uint32_t> Packet::sub_header_get_uint32(SubHeaderType type) const
+    {
+        
+        uint32_t value = 0;
+        for(const auto& sub: headers_)
+        {
+            if(sub.type==type)
+            {
+                if(sub.value.size() != sizeof(uint32_t))
+                    return std::nullopt;
+
+                std::memcpy(&value, sub.value.data(), sizeof(value));
+                value=ntohl(value);
+                return std::optional<uint32_t>(value);
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    std::optional<std::string> Packet::sub_eader_get_string(SubHeaderType type) const
+    {
+        for(const auto& sub:headers_)
+        {
+            if(sub.type==type)
+            {
+                std::string value(
+                    reinterpret_cast<const char*>(sub.value.data()),
+                    sub.value.size()); 
+
+                return std::optional<std::string>(value);
+            }
+        }
+        return std::nullopt;
+    }
+
+
+    uint8_t Packet::sub_header_to_byte(SubHeaderType type)
     {
         switch (type)
         {
@@ -223,7 +272,7 @@ namespace common {
         }
     }
 
-    SubHeaderType sub_header_from_byte(uint8_t byte)
+    SubHeaderType Packet::sub_header_from_byte(uint8_t byte)
     {
         switch (byte)
         {

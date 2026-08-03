@@ -21,7 +21,10 @@ Packet format:
 +----------------------------------------------------------+
 
 Sub headers format:
-[SubHeaderSize 2 bytes][SubHeaderType 1 byte][Value]
++------------------+-------------------+-------------------+
+| sub_header_size  | sub_header_type   | value             |
+| 2 bytes          | 1 byte            | variable          |
++------------------+-------------------+-------------------+
 
 */
 
@@ -29,7 +32,10 @@ Sub headers format:
 #include <cstdint>
 #include <vector>
 #include <span>
+#include <string>
 #include <cstddef>
+#include <optional>
+
 #include "common/packet_enums.hpp"
 #include "common/sub_header_type.hpp"
 
@@ -47,7 +53,7 @@ public:
     {
         uint16_t size;
         SubHeaderType type;
-        uint16_t offset;
+        //uint16_t offset;
         std::span<const uint8_t> value;
     };
 
@@ -68,7 +74,9 @@ public:
     void setSubHeader(SubHeaderType type, std::span<const std::byte> value);
     uint8_t sub_header_to_byte(SubHeaderType type);
     SubHeaderType sub_header_from_byte(uint8_t byte);
-    std::span<const uint8_t> sub_header_value(SubHeaderType type) const;
+    std::optional<uint8_t> sub_header_get_uint8(SubHeaderType type) const;
+    std::optional<uint32_t> sub_header_get_uint32(SubHeaderType type) const;
+    std::optional<std::string> sub_eader_get_string(SubHeaderType type) const;
 
     uint32_t packet_size() const;
     PacketVersion version() const;

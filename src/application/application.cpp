@@ -1,5 +1,10 @@
-#include "application.hpp"
+#include "application/application.hpp"
+
+#include <boost/mysql.hpp>
+
 #include "logger/logger.hpp"
+
+namespace mysql = boost::mysql;
 
 namespace scalable {
 namespace server {
@@ -11,11 +16,13 @@ namespace server {
     work_guard_(boost::asio::make_work_guard(io_context_)),
     signals_(io_context_),
     config_("config.json"),
+    params_(makeParams(config_)),
+    connection_pool_(io_context_, std::move(params_)),
     thread_pool_(),
     buffer_pool_(),
     router_()
     {
-
+        
         signals_.add(SIGHUP);
         signals_.add(SIGINT);
         signals_.add(SIGTERM);
@@ -32,8 +39,10 @@ namespace server {
         if(!logger_->getFileFolders())
             throw std::invalid_argument("There is an error in path, name or extension of log file");
 
+        connection_pool_.async_run(boost::asio::detached);
+        
         server_=std::make_unique<Server>(
-            io_context_, config_, logger_);
+            io_context_, config_, logger_, connection_pool_);
 
         
     }
@@ -97,7 +106,19 @@ namespace server {
         );
     }
 
+    mysql::pool_params Application::makeParams(const Config& config)
+    {
+        mysql::pool_params params;
+        
+        params.server_address.emplace_host_and_port(
+            config.get_string("database.host", "host"),
+            config.get_int("database.port", 3306));
+        params.database = config.get_string("database.database", "database");
+        params.username = config.get_string("database.username", "username");
+        params.password = config.get_string("database.password", "password");
 
+        return params;
+    }
 
 }
 }

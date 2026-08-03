@@ -1,0 +1,10 @@
+{
+  "1": "Success",
+
+  "101": "Invalid user ID.",
+  "102": "User ID length is invalid.",
+  "103": "Password length is invalid.",
+
+  "201": "User not found.",
+  "202": "Failed to insert data into the database."
+}

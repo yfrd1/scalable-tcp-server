@@ -1,13 +1,18 @@
-#include <boost/asio.hpp>
+#include "session/session.hpp"
+
 #include <memory>
 #include <array>
 #include <cstdint>
 #include <utility>
-#include "session.hpp"
+
+#include <boost/asio.hpp>
+#include <boost/mysql.hpp>
+
 #include "logger/logger.hpp"
 #include "config/config.hpp"
 #include "common/packet.hpp"
 
+namespace mysql = boost::mysql;
 using boost::asio::ip::tcp;
 using LogLevel = scalable::server::Logger::LogLevel;
 
@@ -17,10 +22,12 @@ namespace server {
     Session::Session(tcp::socket socket, 
         Config& config, 
         std::shared_ptr<Logger> logger,
+        mysql::connection_pool& pool,
         std::function<void(std::shared_ptr<Session>)> on_close) :
         socket_(std::move(socket)),
         config_(config),
         logger_(logger),
+        connection_pool_(pool),
         on_close_(std::move(on_close)),
         idle_timer_(socket_.get_executor())
     {
@@ -53,7 +60,7 @@ namespace server {
     void Session::on_packet(std::vector<uint8_t> packet)
     {
         Packet packetObj(std::move(packet));
-        router_.route(*this, packetObj);
+        router_.route(*this, packetObj, connection_pool_);
     }   
 
     void Session::write_packet(std::vector<uint8_t> packet)
@@ -94,5 +101,30 @@ namespace server {
             }
         );
     }
+
+    boost::asio::any_io_executor Session::get_executor()
+    {
+        return socket_.get_executor();
+    }
+
+    tcp::endpoint Session::get_remote_endpoint()
+    {
+        boost::system::error_code ec;
+        return socket_.remote_endpoint(ec);
+    }
+
+
+    std::string Session::get_remote_address()
+    {
+        auto ep = get_remote_endpoint();
+        return ep.address().to_string();
+    }
+
+    unsigned short Session::get_remote_port()
+    {
+        auto ep = get_remote_endpoint();
+        return ep.port();
+    }
+
 }
 }
